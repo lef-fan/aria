@@ -1,0 +1,63 @@
+{
+    "mic": {
+      "enable": true,
+      "params": {
+        "samplerate": 16000,
+        "frames": 16000,
+        "channels": 1
+      }
+    },
+    "vad": {
+      "enable": true,
+      "params": {
+        "device": "cpu",
+        "samplerate": 16000,
+        "no_voice_wait_sec": 2
+      }
+    },
+    "stt": {
+      "enable": true,
+      "params": {
+        "device": "cpu",
+        "model_id": "openai/whisper-large-v3",
+        "low_cpu_mem_usage": true,
+        "attn": "flash_attention_2",
+        "force_language": "en"
+      }
+    },
+    "llm": {
+        "enable": true,
+        "params": {
+          "device": "cpu",
+          "model_name": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
+          "version": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
+          "context_length": 8000,
+          "chat_format": "llama-2",
+          "verbose": false,
+          "system_message": "You are Aria an AI entity. You are very rude but funny."
+        }
+      },
+    "tts": {
+      "enable": true,
+      "params": {
+        "device": "cpu",
+        "samplerate": 24000,
+        "bufer_size": 24000,
+        "channels": 1,
+        "tts_config": "tts_models--multilingual--multi-dataset--xtts_v2/config.json",
+        "model": "tts_models--multilingual--multi-dataset--xtts_v2/",
+        "assets": {
+            "speaker": "xttsv2_speakers_samples/Sofia Hellen.wav"
+        }
+      }
+    },
+    "audioplayer": {
+        "enable": true,
+        "params": {
+            "assets": {
+                "listening_sound": "listening.wav",
+                "speaking_sound": "speaking.wav"
+            }
+        }
+      }
+  }
