@@ -31,6 +31,7 @@
           "device": "cpu",
           "model_name": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
           "version": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
+          "num_gpu_layers": -1,
           "context_length": 8000,
           "chat_format": "llama-2",
           "verbose": false,
