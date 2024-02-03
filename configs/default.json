@@ -3,7 +3,7 @@
       "enable": true,
       "params": {
         "samplerate": 16000,
-        "frames": 16000,
+        "bufer_size": 16000,
         "channels": 1
       }
     },
