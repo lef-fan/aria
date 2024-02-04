@@ -2,10 +2,7 @@ from copy import deepcopy
 import pyaudio
 
 
-import pyaudio
-from copy import deepcopy
-
-class mic:
+class Mic:
     """
     Represents a microphone component.
 
@@ -31,6 +28,7 @@ class mic:
         self.samplerate = self.params.get('samplerate', None)
         self.buffer_size = self.params.get('buffer_size', None)
         self.channels = self.params.get('channels', None)
+        self.device = self.params.get('device', None)
         self.sample_format = pyaudio.paInt16
         
         self.p = pyaudio.PyAudio()
@@ -40,6 +38,7 @@ class mic:
             rate=self.samplerate,
             frames_per_buffer=self.buffer_size,
             input=True,
+            input_device_index=self.device,
             stream_callback=self._update_data,
         )
         
