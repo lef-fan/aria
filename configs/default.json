@@ -47,15 +47,15 @@
         "tts_config": "tts_models--multilingual--multi-dataset--xtts_v2/config.json",
         "model_name": "tts_models--multilingual--multi-dataset--xtts_v2/",
         "assets": {
-            "speaker": "Sofia Hellen.wav"
+            "speaker": "assets/sofia_hellen.wav"
         }
       }
     },
     "Ap": {
         "params": {
             "assets": {
-                "listening_sound": "listening.wav",
-                "speaking_sound": "speaking.wav"
+                "listening_sound": "assets/listening.wav",
+                "speaking_sound": "assets/speaking.wav"
             }
         }
       }

@@ -10,6 +10,7 @@ import torch
 from components.mic import Mic
 from components.vad import Vad
 from components.stt import Stt
+from components.ap import Ap
 
 
 def main(config_file):
@@ -19,13 +20,16 @@ def main(config_file):
     mic_params = json_data.get("Mic", {}).get("params", {})
     vad_params = json_data.get("Vad", {}).get("params", {})
     stt_params = json_data.get("Stt", {}).get("params", {})
+    ap_params = json_data.get("Ap", {}).get("params", {})
     
     mic = Mic(params=mic_params)
     vad = Vad(params=vad_params)
     stt = Stt(params=stt_params)
+    ap = Ap(params=ap_params)
     
     final_data = torch.Tensor()
     
+    ap.play(ap.listening_sound, ap.listening_sound_sr)
     while True:
         mic_data = mic.get_data()
         if mic_data is not None:
@@ -38,8 +42,12 @@ def main(config_file):
                 # logging.info("vad end:")
                 # logging.info(final_data)
                 stt_data = stt.transcribe(final_data)[1:]
+                mic.stop_mic()
+                ap.play(ap.speaking_sound, ap.speaking_sound_sr)
                 if len(stt_data) != 1:
                     logging.info("stt data: " + stt_data)
+                    ap.play(ap.listening_sound, ap.listening_sound_sr)
+                    mic.start_mic()
                 final_data = torch.Tensor()
             else:
                 final_data = torch.cat([final_data, mic_data])
