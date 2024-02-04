@@ -4,17 +4,19 @@ import torch
 class Vad:
     def __init__(self, params=None):
         self.params = params or {}
-        self.device = self.params.get('device', None)
         self.samplerate = self.params.get('samplerate', None)
+        self.repo_or_dir = self.params.get('repo_or_dir', None)
+        self.model_name = self.params.get('model_name', None)
+        self.force_reload = self.params.get('force_reload', None)
+        self.use_onnx = self.params.get('use_onnx', None)
         self.no_voice_wait_sec = self.params.get('no_voice_wait_sec', None)
         
         self.silero_vad_model, self.silero_utils = torch.hub.load(
-            repo_or_dir="snakers4/silero-vad",
-            model="silero_vad",
-            force_reload=False,
-            onnx=False
+            repo_or_dir=self.repo_or_dir,
+            model=self.model_name,
+            force_reload=self.force_reload,
+            onnx=self.use_onnx
         )
-        self.silero_vad_model = self.silero_vad_model.to(self.device)
         
         (
             self.get_speech_timestamps,
@@ -29,7 +31,7 @@ class Vad:
 
     def check_data(self, data):
         speech_timestamps = self.get_speech_timestamps(
-            data.to(self.device),
+            data,
             self.silero_vad_model,
             sampling_rate=self.samplerate
         )
