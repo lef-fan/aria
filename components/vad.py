@@ -62,7 +62,7 @@ class Vad:
         self.no_voice_sec = 0
         self.voice_trigger = False
 
-    def check_data(self, data):
+    def check(self, data):
         """
         Checks the audio data for voice activity.
 

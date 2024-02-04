@@ -19,11 +19,10 @@
     },
     "Stt": {
       "params": {
-        "device": "cpu",
-        "model_id": "openai/whisper-large-v3",
+        "device": "cuda",
+        "model_name": "openai/whisper-large-v3",
         "low_cpu_mem_usage": true,
-        "attn": "flash_attention_2",
-        "force_language": "en"
+        "attn": "flash_attention_2"
       }
     },
     "Llm": {
