@@ -41,6 +41,7 @@
         "samplerate": 24000,
         "buffer_size": 24000,
         "channels": 1,
+        "deepspeed": false,
         "tts_config": "tts_models--multilingual--multi-dataset--xtts_v2/config.json",
         "model": "tts_models--multilingual--multi-dataset--xtts_v2/",
         "assets": {
