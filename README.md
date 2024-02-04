@@ -8,6 +8,9 @@ Meet Aria. A local and uncensored AI entity.
 python main.py
 ```
 
+## Contributions
+🌟 We'd love your contribution! Please submit your changes via pull request to join in the fun! 🚀
+
 ## Disclaimer
 Aria is a powerful AI entity designed for local use. Users are advised to exercise caution and responsibility when interacting with Aria, as its capabilities may have unintended consequences if used improperly or without careful consideration.
 
