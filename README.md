@@ -26,4 +26,4 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 ## License Information
 
 ### ❗ Important Note:
-While this project is open-source, the usage of some of the components it depends on are not.
+While this project is licensed under Apache 2.0, the usage of some of the components it depends on might not and they will be listed below:
