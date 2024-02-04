@@ -84,3 +84,7 @@ class Mic:
 
         """
         self.stream.stop_stream()
+
+
+
+

@@ -2,6 +2,39 @@ import torch
 
 
 class Vad:
+    """
+    Voice Activity Detection (VAD) class.
+
+    Args:
+        params (dict): Parameters for VAD initialization.
+            - samplerate (int): The sampling rate of the audio.
+            - repo_or_dir (str): The repository or directory containing the VAD model.
+            - model_name (str): The name of the VAD model.
+            - force_reload (bool): Whether to force reload the VAD model.
+            - use_onnx (bool): Whether to use ONNX format for the VAD model.
+            - no_voice_wait_sec (int): The number of seconds to wait before considering the absence of voice.
+
+    Attributes:
+        params (dict): Parameters for VAD initialization.
+        samplerate (int): The sampling rate of the audio.
+        repo_or_dir (str): The repository or directory containing the VAD model.
+        model_name (str): The name of the VAD model.
+        force_reload (bool): Whether to force reload the VAD model.
+        use_onnx (bool): Whether to use ONNX format for the VAD model.
+        no_voice_wait_sec (int): The number of seconds to wait before considering the absence of voice.
+        silero_vad_model: The loaded VAD model.
+        silero_utils: Utility functions for VAD.
+        get_speech_timestamps: Function to get speech timestamps from audio data.
+        save_audio: Function to save audio data.
+        read_audio: Function to read audio data.
+        VADIterator: Iterator for VAD.
+        collect_chunks: Function to collect audio chunks.
+
+    Methods:
+        check_data(data): Checks the audio data for voice activity.
+
+    """
+
     def __init__(self, params=None):
         self.params = params or {}
         self.samplerate = self.params.get('samplerate', None)
@@ -30,6 +63,16 @@ class Vad:
         self.voice_trigger = False
 
     def check_data(self, data):
+        """
+        Checks the audio data for voice activity.
+
+        Args:
+            data: The audio data to be checked.
+
+        Returns:
+            str: If voice activity is detected, returns "vad end". Otherwise, returns None.
+
+        """
         speech_timestamps = self.get_speech_timestamps(
             data,
             self.silero_vad_model,

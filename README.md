@@ -1,7 +1,9 @@
 # Aria
+
 Meet Aria. A local and uncensored AI entity.
 
 # Disclaimer
+
 Aria is a powerful AI entity designed for local use. Users are advised to exercise caution and responsibility when interacting with Aria, as its capabilities may have unintended consequences if used improperly or without careful consideration.
 
 By engaging with Aria, you understand and agree that the suggestions and responses provided are for informational purposes only, and should be used with caution and discretion.
