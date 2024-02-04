@@ -1,5 +1,6 @@
 # Aria
 
+![Logo Alt Text](AriaLogo.png)
 Meet Aria. A local and uncensored AI entity.
 
 # Disclaimer
