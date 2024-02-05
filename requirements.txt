@@ -1,6 +1,8 @@
 numpy==1.26.3
 PyAudio==0.2.14
 torch==2.2.0
+torchaudio==2.2.0
+torchvision==0.17.0
 onnxruntime==1.17.0
 transformers==4.38.0.dev0
 flash-attn==2.5.2
