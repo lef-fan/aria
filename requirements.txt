@@ -8,3 +8,4 @@ sounddevice==0.4.6
 soundfile==0.12.1
 llama_cpp_python==0.2.38
 huggingface-hub==0.20.3
+accelerate==0.26.1
