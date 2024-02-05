@@ -31,6 +31,9 @@ class Mic:
         self.device = self.params.get('device', None)
         self.sample_format = pyaudio.paInt16
         
+        if self.device == "default":
+            self.device = None
+        
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(
             format=self.sample_format,

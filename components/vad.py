@@ -70,7 +70,9 @@ class Vad:
             data: The audio data to be checked.
 
         Returns:
-            str: If voice activity is detected, returns "vad end". Otherwise, returns None.
+            str: If voice gathering finished, returns "vad end". 
+                Otherwise, returns the voice data to collect. 
+                Returns None if there was no voice and had no voice activity already.
 
         """
         speech_timestamps = self.get_speech_timestamps(

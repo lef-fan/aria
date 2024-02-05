@@ -4,7 +4,7 @@
         "samplerate": 16000,
         "buffer_size": 16000,
         "channels": 1,
-        "device": null
+        "device": "default"
       }
     },
     "Vad": {
