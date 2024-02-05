@@ -3,10 +3,20 @@ Meet Aria. A local and uncensored AI entity.
 
 ![Aria](https://github.com/lef-fan/aria/blob/main/assets/aria.jpg?raw=true)
 
+## Installation
+Install required libs.
+
+[For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
+
+More are coming, work in progress...
+
 ## Usage
 ```
 python main.py
 ```
+
+## Documentation
+Work in progress...
 
 ## Contributions
 🌟 We'd love your contribution! Please submit your changes via pull request to join in the fun! 🚀
