@@ -13,7 +13,7 @@ class Stt:
         if self.device == "cpu":
             self.attn = "sdpa"
             
-        torch_dtype = torch.float16 if torch.cuda.is_available() and self.device == "cuda" else torch.float32
+        torch_dtype = torch.float16 if torch.cuda.is_available() and "cuda" in self.device else torch.float32
         
         model = AutoModelForSpeechSeq2Seq.from_pretrained(
             self.model_name,

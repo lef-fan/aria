@@ -19,7 +19,7 @@
     },
     "Stt": {
       "params": {
-        "device": "cuda",
+        "device": "cuda:0",
         "model_name": "openai/whisper-large-v3",
         "low_cpu_mem_usage": true,
         "attn": "flash_attention_2"
@@ -27,14 +27,13 @@
     },
     "Llm": {
         "params": {
-          "device": "cpu",
           "model_name": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
-          "version": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
+          "model_file": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
           "num_gpu_layers": -1,
           "context_length": 8000,
           "chat_format": "llama-2",
-          "verbose": false,
-          "system_message": "You are Aria an AI entity. You are very rude but funny."
+          "system_message": "You are Aria an AI entity. You are very rude but funny.",
+          "verbose": false
         }
       },
     "Tts": {

@@ -11,6 +11,7 @@ from components.mic import Mic
 from components.vad import Vad
 from components.stt import Stt
 from components.ap import Ap
+from components.llm import Llm
 
 
 def main(config_file):
@@ -21,11 +22,13 @@ def main(config_file):
     vad_params = json_data.get("Vad", {}).get("params", {})
     stt_params = json_data.get("Stt", {}).get("params", {})
     ap_params = json_data.get("Ap", {}).get("params", {})
+    llm_params = json_data.get("Llm", {}).get("params", {})
     
     mic = Mic(params=mic_params)
     vad = Vad(params=vad_params)
     stt = Stt(params=stt_params)
     ap = Ap(params=ap_params)
+    llm = Llm(params=llm_params)
     
     final_data = torch.Tensor()
     
@@ -45,9 +48,11 @@ def main(config_file):
                 mic.stop_mic()
                 ap.play(ap.speaking_sound, ap.speaking_sound_sr)
                 if len(stt_data) != 1:
-                    logging.info("stt data: " + stt_data)
-                    ap.play(ap.listening_sound, ap.listening_sound_sr)
-                    mic.start_mic()
+                    logging.info("user: " + stt_data)
+                    llm_data = llm.get_answer(stt_data)
+                    logging.info("aria: " + llm_data)
+                ap.play(ap.listening_sound, ap.listening_sound_sr)
+                mic.start_mic()
                 final_data = torch.Tensor()
             else:
                 final_data = torch.cat([final_data, mic_data])
