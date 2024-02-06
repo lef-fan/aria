@@ -1,4 +1,5 @@
 import torch
+import transformers
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 
@@ -9,6 +10,10 @@ class Stt:
         self.model_name = self.params.get('model_name', None)
         self.low_cpu_mem_usage = self.params.get('low_cpu_mem_usage', None)
         self.attn = self.params.get('attn', None)
+        self.verbose = self.params.get('verbose', None)
+        
+        if not self.verbose:
+            transformers.logging.set_verbosity_error()
         
         if self.device == "cpu":
             self.attn = "sdpa"

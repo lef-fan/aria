@@ -24,7 +24,8 @@
         "device": "cuda:0",
         "model_name": "openai/whisper-large-v3",
         "low_cpu_mem_usage": true,
-        "attn": "flash_attention_2"
+        "attn": "flash_attention_2",
+        "verbose": false
       }
     },
     "Llm": {
