@@ -39,7 +39,7 @@ def main(config_file):
             mic_data = np.frombuffer(mic_data, np.int16).flatten().astype(np.float32) / 32768.0
             mic_data = torch.Tensor(mic_data)
             vad_data = vad.check(mic_data)
-            if vad_data == None:
+            if vad_data is None:
                 pass
             elif vad_data == "vad end":
                 # logging.info("vad end:")

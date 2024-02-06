@@ -1,4 +1,5 @@
 import torch
+import onnxruntime as ort
 
 
 class Vad:
@@ -43,12 +44,19 @@ class Vad:
         self.force_reload = self.params.get('force_reload', None)
         self.use_onnx = self.params.get('use_onnx', None)
         self.no_voice_wait_sec = self.params.get('no_voice_wait_sec', None)
+        self.onnx_verbose = self.params.get('onnx_verbose', None)
+        self.verbose = self.params.get('verbose', None)
+        
+        if self.use_onnx and not self.onnx_verbose:
+            ort.set_default_logger_severity(3)
         
         self.silero_vad_model, self.silero_utils = torch.hub.load(
             repo_or_dir=self.repo_or_dir,
             model=self.model_name,
             force_reload=self.force_reload,
-            onnx=self.use_onnx
+            onnx=self.use_onnx,
+            trust_repo='check',
+            verbose=self.verbose
         )
         
         (
