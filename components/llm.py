@@ -1,3 +1,4 @@
+import sys
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 
@@ -9,6 +10,7 @@ class Llm:
         self.model_file = self.params.get('model_file', None)
         self.num_gpu_layers = self.params.get('num_gpu_layers', None)
         self.context_length = self.params.get('context_length', None)
+        self.streaming_output = self.params.get('streaming_output', None)
         self.chat_format = self.params.get('chat_format', None)
         self.system_message = self.params.get('system_message', None)
         self.verbose = self.params.get('verbose', None)
@@ -38,8 +40,25 @@ class Llm:
             }
         )
     
-        outputs = self.llm.create_chat_completion(self.messages)
-        llm_output = outputs["choices"][0]["message"]["content"].strip()
+        outputs = self.llm.create_chat_completion(
+            self.messages,
+            stream=self.streaming_output
+            )
+        if self.streaming_output:
+            llm_output = ""
+            for i, out in enumerate(outputs):
+                if "content" in out['choices'][0]["delta"]:
+                    output_chunk_txt = out['choices'][0]["delta"]['content']
+                    if i == 1:
+                        print('aria:', output_chunk_txt.strip(), end='')
+                    else:
+                        print(output_chunk_txt, end='')
+                    sys.stdout.flush()
+                    llm_output += output_chunk_txt
+            print()
+            llm_output = llm_output.strip()  
+        else:
+            llm_output = outputs["choices"][0]["message"]["content"].strip()
 
         self.messages.append(
             {

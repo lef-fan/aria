@@ -53,9 +53,10 @@ def main(config_file):
                     mic.stop_mic()
                     ap.play(ap.speaking_sound, ap.speaking_sound_sr)
                     if len(stt_data) != 1:
-                        logging.info("user: " + stt_data)
+                        print("user:", stt_data)
                         llm_data = llm.get_answer(stt_data)
-                        logging.info("aria: " + llm_data)
+                        if not llm.streaming_output:
+                            print("aria:", llm_data)
                     time.sleep(1)
                     ap.play(ap.listening_sound, ap.listening_sound_sr)
                     mic.start_mic()
