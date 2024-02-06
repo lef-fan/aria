@@ -44,7 +44,7 @@ def main(config_file):
             elif vad_data == "vad end":
                 # logging.info("vad end:")
                 # logging.info(final_data)
-                stt_data = stt.transcribe(final_data)[1:]
+                stt_data = stt.transcribe_translate(final_data)
                 mic.stop_mic()
                 ap.play(ap.speaking_sound, ap.speaking_sound_sr)
                 if len(stt_data) != 1:
