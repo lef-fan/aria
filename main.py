@@ -4,40 +4,40 @@ logging.basicConfig(level=logging.INFO)
 import argparse
 import json
 import time
+from copy import deepcopy
 from os.path import join
 import numpy as np
-import torch
-from components.mic import Mic
 from components.vad import Vad
 from components.stt import Stt
-from components.ap import Ap
 from components.llm import Llm
+from components.ap import Ap
+from components.mic import Mic
 
 
 def main(config_file):
     with open(config_file, "r") as file:
         json_data = json.load(file)
     
-    mic_params = json_data.get("Mic", {}).get("params", {})
     vad_params = json_data.get("Vad", {}).get("params", {})
     stt_params = json_data.get("Stt", {}).get("params", {})
-    ap_params = json_data.get("Ap", {}).get("params", {})
     llm_params = json_data.get("Llm", {}).get("params", {})
+    ap_params = json_data.get("Ap", {}).get("params", {})
+    mic_params = json_data.get("Mic", {}).get("params", {})
     
-    mic = Mic(params=mic_params)
     vad = Vad(params=vad_params)
     stt = Stt(params=stt_params)
-    ap = Ap(params=ap_params)
     llm = Llm(params=llm_params)
+    ap = Ap(params=ap_params)
+    mic = Mic(params=mic_params)
     
-    final_data = torch.Tensor()
+    final_data = None
     
+    time.sleep(1)
     ap.play(ap.listening_sound, ap.listening_sound_sr)
+    mic.start_mic()
     while True:
         mic_data = mic.get_data()
         if mic_data is not None:
-            mic_data = np.frombuffer(mic_data, np.int16).flatten().astype(np.float32) / 32768.0
-            mic_data = torch.Tensor(mic_data)
             vad_data = vad.check(mic_data)
             if vad_data is None:
                 pass
@@ -51,11 +51,17 @@ def main(config_file):
                     logging.info("user: " + stt_data)
                     llm_data = llm.get_answer(stt_data)
                     logging.info("aria: " + llm_data)
+                time.sleep(1)
                 ap.play(ap.listening_sound, ap.listening_sound_sr)
                 mic.start_mic()
-                final_data = torch.Tensor()
+                final_data = None
+                continue
             else:
-                final_data = torch.cat([final_data, mic_data])
+                if final_data is None:
+                    final_data = deepcopy(mic_data)
+                else:
+                    final_data = np.concatenate([final_data, mic_data])
+                # logging.info("respond starts in: " + str(vad.no_voice_wait_sec - vad.no_voice_sec))
         time.sleep(1)
 
 if __name__ == "__main__":

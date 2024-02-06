@@ -43,7 +43,6 @@ class Stt:
         )
 
     def transcribe_translate(self, data):
-        data = data.numpy()
         data = self.pipe(
             data,
             generate_kwargs={"language": "en"}

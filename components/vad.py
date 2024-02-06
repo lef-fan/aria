@@ -79,7 +79,7 @@ class Vad:
 
         Returns:
             str: If voice gathering finished, returns "vad end". 
-                Otherwise, returns the voice data to collect. 
+                Otherwise, returns "vad continue" to gather the current voice. 
                 Returns None if there was no voice and had no voice activity already.
 
         """
@@ -100,4 +100,4 @@ class Vad:
                     return "vad end"
             else:
                 return None
-        return data
+        return "vad continue"

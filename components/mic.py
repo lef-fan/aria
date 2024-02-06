@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 import pyaudio
 
 
@@ -29,7 +30,7 @@ class Mic:
         self.buffer_size = self.params.get('buffer_size', None)
         self.channels = self.params.get('channels', None)
         self.device = self.params.get('device', None)
-        self.sample_format = pyaudio.paInt16
+        self.sample_format = pyaudio.paFloat32
         
         if self.device == "default":
             self.device = None
@@ -61,7 +62,7 @@ class Mic:
             tuple: A tuple containing the updated audio data and the status to continue the stream.
 
         """
-        self.data = deepcopy(in_data)
+        self.data = np.frombuffer(in_data, np.float32).flatten()
         return (in_data, pyaudio.paContinue)
 
     def get_data(self):
