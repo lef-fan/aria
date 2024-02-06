@@ -12,6 +12,7 @@ from components.stt import Stt
 from components.llm import Llm
 from components.ap import Ap
 from components.mic import Mic
+# import scipy.io.wavfile as wf
 
 
 def main(config_file):
@@ -30,7 +31,8 @@ def main(config_file):
     ap = Ap(params=ap_params)
     mic = Mic(params=mic_params)
     
-    final_data = None
+    mic_last_data = None
+    final_data = np.empty(mic.buffer_size)
     
     time.sleep(1)
     ap.play(ap.listening_sound, ap.listening_sound_sr)
@@ -38,30 +40,33 @@ def main(config_file):
     while True:
         mic_data = mic.get_data()
         if mic_data is not None:
-            vad_data = vad.check(mic_data)
-            if vad_data is None:
-                pass
-            elif vad_data == "vad end":
-                # logging.info("vad end:")
-                # logging.info(final_data)
-                stt_data = stt.transcribe_translate(final_data)
-                mic.stop_mic()
-                ap.play(ap.speaking_sound, ap.speaking_sound_sr)
-                if len(stt_data) != 1:
-                    logging.info("user: " + stt_data)
-                    llm_data = llm.get_answer(stt_data)
-                    logging.info("aria: " + llm_data)
-                time.sleep(1)
-                ap.play(ap.listening_sound, ap.listening_sound_sr)
-                mic.start_mic()
-                final_data = None
-                continue
-            else:
-                if final_data is None:
-                    final_data = deepcopy(mic_data)
+            if not (mic_data==mic_last_data).all():
+                mic_last_data = deepcopy(mic_data)
+                vad_data = vad.check(mic_data)
+                if vad_data is None:
+                    pass
+                elif vad_data == "vad end":
+                    # logging.info("vad end:")
+                    # logging.info(final_data)
+                    # wf.write('test.wav', mic.samplerate, final_data)
+                    stt_data = stt.transcribe_translate(final_data)
+                    mic.stop_mic()
+                    ap.play(ap.speaking_sound, ap.speaking_sound_sr)
+                    if len(stt_data) != 1:
+                        logging.info("user: " + stt_data)
+                        llm_data = llm.get_answer(stt_data)
+                        logging.info("aria: " + llm_data)
+                    time.sleep(1)
+                    ap.play(ap.listening_sound, ap.listening_sound_sr)
+                    mic.start_mic()
+                    final_data = None
+                    continue
                 else:
-                    final_data = np.concatenate([final_data, mic_data])
-                # logging.info("respond starts in: " + str(vad.no_voice_wait_sec - vad.no_voice_sec))
+                    if final_data is None:
+                        final_data = deepcopy(mic_data)
+                    else:
+                        final_data = np.concatenate([final_data, mic_data])
+                    # logging.info("respond starts in: " + str(vad.no_voice_wait_sec - vad.no_voice_sec))
         time.sleep(1)
 
 if __name__ == "__main__":
