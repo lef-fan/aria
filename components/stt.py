@@ -21,8 +21,8 @@ class Stt:
             low_cpu_mem_usage=self.low_cpu_mem_usage,
             use_safetensors=True,
             attn_implementation=self.attn,
+            device_map=self.device
         )
-        model.to(self.device)
         
         processor = AutoProcessor.from_pretrained(self.model_name)
         self.pipe = pipeline(
@@ -32,8 +32,7 @@ class Stt:
             feature_extractor=processor.feature_extractor,
             max_new_tokens=128,
             return_timestamps=True,
-            torch_dtype=torch_dtype,
-            device=self.device,
+            torch_dtype=torch_dtype
         )
 
     def transcribe(self, data):
