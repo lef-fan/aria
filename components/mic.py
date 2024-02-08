@@ -35,8 +35,8 @@ class Mic:
         if self.device == "default":
             self.device = None
         
-        self.p = pyaudio.PyAudio()
-        self.stream = self.p.open(
+        p = pyaudio.PyAudio()
+        self.stream = p.open(
             format=self.sample_format,
             channels=self.channels,
             rate=self.samplerate,

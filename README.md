@@ -37,3 +37,8 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 
 ### ❗ Important Note:
 While this project is licensed under Apache 2.0, the usage of some of the components it depends on might not and they will be listed below:
+
+#### TTS MODEL
+- **License**: Open-source only for non-commercial projects.
+- **Commercial Use**: Requires a paid plan.
+- **Details**: [Coqui Public Model License 1.0.0](https://coqui.ai/cpml)

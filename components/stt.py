@@ -1,3 +1,4 @@
+import warnings
 import torch
 import transformers
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
@@ -14,6 +15,7 @@ class Stt:
         
         if not self.verbose:
             transformers.logging.set_verbosity_error()
+            warnings.filterwarnings("ignore", module="transformers")
         
         if self.device == "cpu":
             self.attn = "sdpa"

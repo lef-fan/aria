@@ -42,15 +42,17 @@
       },
     "Tts": {
       "params": {
-        "device": "cpu",
+        "device": "gpu",
         "samplerate": 24000,
         "buffer_size": 24000,
         "channels": 1,
         "use_deepspeed": false,
-        "tts_config": "tts_models--multilingual--multi-dataset--xtts_v2/config.json",
-        "model_name": "tts_models--multilingual--multi-dataset--xtts_v2/",
+        "text_splitting": true,
+        "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
+        "force_reload": false,
+        "verbose": false,
         "assets": {
-            "speaker": "assets/sofia_hellen.wav"
+            "voice_to_clone": "assets/sofia_hellen.wav"
         }
       }
     },
