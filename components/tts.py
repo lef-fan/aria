@@ -64,11 +64,11 @@ class Tts:
                 enable_text_splitting=self.text_splitting
             )
         for chunk in tts_stream:
-                chunk_length = chunk.shape[-1]
-                chunk = chunk.squeeze()
-                if self.device == 'gpu':
-                    chunk = chunk.squeeze().cpu()
-                self.audio_stream(chunk.numpy())
+            chunk_length = chunk.shape[-1]
+            chunk = chunk.squeeze()
+            if self.device == 'gpu':
+                chunk = chunk.cpu()
+            self.audio_stream(chunk.numpy())
         if chunk_length < self.buffer_size:
             chunk = np.zeros(self.buffer_size - chunk_length)
             self.audio_stream(chunk)
