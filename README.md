@@ -1,7 +1,7 @@
 # Aria
 Meet Aria. A local and uncensored AI entity.
 
-![Aria](https://github.com/lef-fan/aria/blob/main/assets/aria.jpg?raw=true)
+![Aria](https://github.com/lef-fan/aria/blob/main/assets/aria.png?raw=true)
 
 ## Installation
 Install required libs.
