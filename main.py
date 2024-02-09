@@ -4,6 +4,7 @@ logging.basicConfig(level=logging.INFO)
 import argparse
 import json
 import time
+import threading
 from copy import deepcopy
 from os.path import join
 import numpy as np
@@ -13,22 +14,28 @@ from components.llm import Llm
 from components.tts import Tts
 from components.ap import Ap
 from components.mic import Mic
+from components.ui import Ui
 from components.utils import remove_emojis
 from components.utils import remove_multiple_dots
 from components.utils import remove_inside_backticks
 # import scipy.io.wavfile as wf
 
 
-def main(config_file):
+def load_config(config_file):
     with open(config_file, "r") as file:
         json_data = json.load(file)
+    return json_data
+
+def main(ui, config):
+    vad_params = config.get("Vad", {}).get("params", {})
+    stt_params = config.get("Stt", {}).get("params", {})
+    llm_params = config.get("Llm", {}).get("params", {})
+    tts_params = config.get("Tts", {}).get("params", {})
+    ap_params = config.get("Ap", {}).get("params", {})
+    mic_params = config.get("Mic", {}).get("params", {})
     
-    vad_params = json_data.get("Vad", {}).get("params", {})
-    stt_params = json_data.get("Stt", {}).get("params", {})
-    llm_params = json_data.get("Llm", {}).get("params", {})
-    tts_params = json_data.get("Tts", {}).get("params", {})
-    ap_params = json_data.get("Ap", {}).get("params", {})
-    mic_params = json_data.get("Mic", {}).get("params", {})
+    ui.add_message("system", "Loading...", new_entry=False)
+    print('Loading...')
     
     vad = Vad(params=vad_params)
     stt = Stt(params=stt_params)
@@ -42,9 +49,12 @@ def main(config_file):
     
     time.sleep(1)
     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
-    print('##### ~~~ #####')
+    ui.add_message("system", "\nReady...", new_entry=False)
+    print('Ready...')
     mic.start_mic()
     while True:
+        if ui.kill:
+            break
         mic_data = mic.get_data()
         if mic_data is not None:
             if not (mic_data==mic_last_data).all():
@@ -60,17 +70,19 @@ def main(config_file):
                     mic.stop_mic()
                     ap.play_sound(ap.speaking_sound, ap.speaking_sound_sr)
                     if len(stt_data) != 1:
-                        print("user:", stt_data)
-                        llm_data = llm.get_answer(stt_data)
+                        ui.add_message("user", stt_data, new_entry=True)
+                        print("user:", stt_data) 
+                        llm_data = llm.get_answer(stt_data, ui)
                         if not llm.streaming_output:
+                            ui.add_message("aria", llm_data, new_entry=True)
                             print("aria:", llm_data)
                         tts_status = tts.run_tts(remove_emojis(remove_multiple_dots(remove_inside_backticks(llm_data))))
                     else:
+                        ui.add_message("aria", "Did you say something?", new_entry=True)
                         print("aria:", "Did you say something?")
                         tts_status = tts.run_tts("Did you say something?")
                     time.sleep(1)
                     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
-                    print('##### ~~~ #####')
                     mic.start_mic()
                     final_data = None
                     continue
@@ -88,4 +100,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     config_path = join("configs", args.config)
-    main(config_path)
+    config = load_config(config_path)
+    
+    ui_params = config.get("Ui", {}).get("params", {})
+    ui = Ui(params=ui_params)
+    
+    aria_thread = threading.Thread(target=main, args=(ui, config))
+    aria_thread.start()
+    
+    ui.start()

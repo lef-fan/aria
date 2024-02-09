@@ -32,7 +32,7 @@ class Llm:
                 }
             ]
 
-    def get_answer(self, data):
+    def get_answer(self, data, ui):
         self.messages.append(
             {
                 "role": "user", 
@@ -46,13 +46,16 @@ class Llm:
             )
         if self.streaming_output:
             llm_output = ""
+            ui.add_message("aria", "", new_entry=True)
             for i, out in enumerate(outputs):
                 if "content" in out['choices'][0]["delta"]:
                     output_chunk_txt = out['choices'][0]["delta"]['content']
                     if i == 1:
                         print('aria:', output_chunk_txt.strip(), end='')
+                        ui.add_message("aria", output_chunk_txt.strip(), new_entry=False)
                     else:
                         print(output_chunk_txt, end='')
+                        ui.add_message("aria", output_chunk_txt, new_entry=False)
                     sys.stdout.flush()
                     llm_output += output_chunk_txt
             print()
