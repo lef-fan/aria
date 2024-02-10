@@ -67,7 +67,10 @@
     "Ui": {
       "params": {
         "window_title": "Aria",
-        "window_size": "750"
+        "window_size": "750",
+        "assets": {
+          "icon": "assets/aria_icon.png"
+        }
       }
     }
   }

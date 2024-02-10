@@ -6,9 +6,12 @@ class Ui:
         self.params = params or {}
         self.window_title = self.params.get('window_title', None)
         self.window_size = self.params.get('window_size', None)
+        self.icon = self.params.get('assets', None).get('icon', None)
         
         self.root = tk.Tk()
         self.root.title(self.window_title)
+        icon_image = tk.PhotoImage(file=self.icon)
+        self.root.iconphoto(True, icon_image)
         self.root.geometry(f"{self.window_size}x{self.window_size}")
         self.root.configure(bg="black")
         
