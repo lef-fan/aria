@@ -30,6 +30,8 @@ class Tts:
                         frames_per_buffer=self.buffer_size,
                         output=True
                         )
+
+        self.last_chunk_length = None
         
         if not self.verbose:
             warnings.filterwarnings("ignore", module="TTS")
@@ -64,13 +66,15 @@ class Tts:
                 enable_text_splitting=self.text_splitting
             )
         for chunk in tts_stream:
-            chunk_length = chunk.shape[-1]
+            self.last_chunk_length = chunk.shape[-1]
             chunk = chunk.squeeze()
             if self.device == 'gpu':
                 chunk = chunk.cpu()
             self.audio_stream(chunk.numpy())
-        if chunk_length < self.buffer_size:
-            chunk = np.zeros(self.buffer_size - chunk_length)
-            self.audio_stream(chunk)
         
         return 'tts done'
+    
+    def check_last_chunk(self):
+        if self.last_chunk_length < self.buffer_size:
+            chunk = np.zeros(self.buffer_size - self.last_chunk_length)
+            self.audio_stream(chunk)

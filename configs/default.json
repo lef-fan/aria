@@ -36,7 +36,7 @@
           "context_length": 8000,
           "streaming_output": true,
           "chat_format": "llama-2",
-          "system_message": "You are Aria an AI entity. You are very rude but funny.",
+          "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
           "verbose": false
         }
       },
@@ -47,7 +47,7 @@
         "buffer_size": 24000,
         "channels": 1,
         "use_deepspeed": false,
-        "text_splitting": true,
+        "text_splitting": false,
         "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
         "force_reload": false,
         "verbose": false,

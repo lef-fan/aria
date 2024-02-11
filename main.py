@@ -15,9 +15,6 @@ from components.tts import Tts
 from components.ap import Ap
 from components.mic import Mic
 from components.ui import Ui
-from components.utils import remove_emojis
-from components.utils import remove_multiple_dots
-from components.utils import remove_inside_backticks
 # import scipy.io.wavfile as wf
 
 
@@ -72,22 +69,25 @@ def main(ui, config):
                     if len(stt_data) != 1:
                         ui.add_message("user", stt_data, new_entry=True)
                         print("user:", stt_data) 
-                        llm_data = llm.get_answer(stt_data, ui)
+                        llm_data = llm.get_answer(ui, tts, stt_data)
                         if not llm.streaming_output:
                             ui.add_message("aria", llm_data, new_entry=True)
                             print("aria:", llm_data)
-                        tts_status = tts.run_tts(remove_emojis(remove_multiple_dots(remove_inside_backticks(llm_data))))
+                            tts.text_splitting = True
+                            tts_status = tts.run_tts(llm_data)
+                            tts.check_last_chunk()
                     else:
                         ui.add_message("aria", "Did you say something?", new_entry=True)
                         print("aria:", "Did you say something?")
                         tts_status = tts.run_tts("Did you say something?")
+                        tts.check_last_chunk()
                     time.sleep(1)
                     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
                     mic.start_mic()
-                    final_data = None
+                    final_data = np.empty(mic.buffer_size)
                     continue
                 else:
-                    if final_data is None:
+                    if len(final_data) == mic.buffer_size:
                         final_data = deepcopy(mic_data)
                     else:
                         final_data = np.concatenate([final_data, mic_data])
