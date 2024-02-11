@@ -32,6 +32,13 @@ We encourage users to exercise discernment, judgment, and thorough consideration
 
 Should you have any doubts regarding the accuracy or suitability of Aria's responses, we advise consulting with qualified professionals or experts in the relevant field.
 
+## Acknowledgments
+
+[silero-vad](https://github.com/snakers4/silero-vad)\
+[transformers](https://github.com/huggingface/transformers)\
+[whisper](https://github.com/openai/whisper)\
+[llama-cpp-python](https://github.com/abetlen/llama-cpp-python)\
+[TTS](https://github.com/coqui-ai/TTS)
 
 ## License Information
 
