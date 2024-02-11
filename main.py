@@ -42,7 +42,7 @@ def main(ui, config):
     mic = Mic(params=mic_params)
     
     mic_last_data = None
-    final_data = np.empty(mic.buffer_size)
+    final_data = None
     
     time.sleep(1)
     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
@@ -84,10 +84,10 @@ def main(ui, config):
                     time.sleep(1)
                     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
                     mic.start_mic()
-                    final_data = np.empty(mic.buffer_size)
+                    final_data = None
                     continue
                 else:
-                    if len(final_data) == mic.buffer_size:
+                    if final_data is None:
                         final_data = deepcopy(mic_data)
                     else:
                         final_data = np.concatenate([final_data, mic_data])
