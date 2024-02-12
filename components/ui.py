@@ -31,10 +31,10 @@ class Ui:
         self.kill = False
 
     def add_message(self, user_name, text, new_entry=False):
-        if "user" in user_name:
-            color = 'red'
-        elif "aria" in user_name:
-            color = "green"
+        if "You" in user_name:
+            color = '#71CA2C'
+        elif "Aria" in user_name:
+            color = "#7441B1"
         try:
             self.text_widget.config(state="normal")
             if new_entry:

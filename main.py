@@ -47,7 +47,7 @@ def main(ui, config):
     time.sleep(1)
     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
     ui.add_message("system", "\nReady...", new_entry=False)
-    print('Ready...')
+    print('Ready...\n\n🎙...', end= " ")
     mic.start_mic()
     while True:
         if ui.kill:
@@ -67,22 +67,25 @@ def main(ui, config):
                     mic.stop_mic()
                     ap.play_sound(ap.speaking_sound, ap.speaking_sound_sr)
                     if len(stt_data) != 1:
-                        ui.add_message("user", stt_data, new_entry=True)
-                        print("user:", stt_data) 
+                        ui.add_message("You", stt_data, new_entry=True)
+                        print("You:", stt_data)
+                        print("🤖...", end=" ")
                         llm_data = llm.get_answer(ui, tts, stt_data)
                         if not llm.streaming_output:
-                            ui.add_message("aria", llm_data, new_entry=True)
-                            print("aria:", llm_data)
+                            ui.add_message("Aria", llm_data, new_entry=True)
+                            print("Aria:", llm_data)
                             tts.text_splitting = True
                             tts_status = tts.run_tts(llm_data)
                             tts.check_last_chunk()
                     else:
-                        ui.add_message("aria", "Did you say something?", new_entry=True)
-                        print("aria:", "Did you say something?")
+                        print("You: ...")
+                        ui.add_message("Aria", "Did you say something?", new_entry=True)
+                        print("🤖... Aria:", "Did you say something?")
                         tts_status = tts.run_tts("Did you say something?")
                         tts.check_last_chunk()
                     time.sleep(1)
                     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
+                    print("\n🎙...", end=" ")
                     mic.start_mic()
                     final_data = None
                     continue
