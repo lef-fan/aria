@@ -8,12 +8,15 @@ Install required libs.
 
 [For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
 
+(Tested on Linux + NVIDIA GPUS)
+
 More are coming, work in progress...
 
 ## Usage
 ```
 python main.py
 ```
+You may edit the default config for your device (change model, specify devices, etc...)
 
 ## Documentation
 Work in progress...
@@ -34,11 +37,11 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 
 ## Acknowledgments
 
-[silero-vad](https://github.com/snakers4/silero-vad)\
-[transformers](https://github.com/huggingface/transformers)\
-[whisper](https://github.com/openai/whisper)\
-[llama-cpp-python](https://github.com/abetlen/llama-cpp-python)\
-[TTS](https://github.com/coqui-ai/TTS)
+- [silero-vad](https://github.com/snakers4/silero-vad)
+- [transformers](https://github.com/huggingface/transformers)
+- [whisper](https://github.com/openai/whisper)
+- [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
+- [TTS](https://github.com/coqui-ai/TTS)
 
 ## License Information
 
