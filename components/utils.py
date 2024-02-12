@@ -14,6 +14,6 @@ def remove_multiple_dots(text):
     return result_str
 
 
-def remove_inside_backticks(text):
+def remove_code_blocks(text):
     pattern = r'```.*?```'
     return re.sub(pattern, '', text, flags=re.DOTALL)
