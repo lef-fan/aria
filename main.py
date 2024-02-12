@@ -50,6 +50,7 @@ def main(ui, config):
     print('Ready...\n\n🎙...', end= " ")
     mic.start_mic()
     while True:
+        skip_sleep = False
         if ui.kill:
             break
         mic_data = mic.get_data()
@@ -88,14 +89,15 @@ def main(ui, config):
                     print("\n🎙...", end=" ")
                     mic.start_mic()
                     final_data = None
-                    continue
+                    skip_sleep = True
                 else:
                     if final_data is None:
                         final_data = deepcopy(mic_data)
                     else:
                         final_data = np.concatenate([final_data, mic_data])
                     # logging.info("respond starts in: " + str(vad.no_voice_wait_sec - vad.no_voice_sec))
-        time.sleep(1)
+        if not skip_sleep:
+            time.sleep(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Aria.")
