@@ -41,10 +41,7 @@ def main(ui, config):
     ap = Ap(params=ap_params)
     mic = Mic(params=mic_params)
     
-    mic_last_data = None
-    final_data = None
-    
-    time.sleep(1)
+    mic_last_chunk = None
     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
     ui.add_message("system", "\nReady...", new_entry=False)
     print('Ready...\n\n🎙...', end= " ")
@@ -52,20 +49,23 @@ def main(ui, config):
     while True:
         skip_sleep = False
         if ui.kill:
+            print("\nShutting down...")
             break
-        mic_data = mic.get_data()
-        if mic_data is not None:
-            if not (mic_data==mic_last_data).all():
-                mic_last_data = deepcopy(mic_data)
-                vad_data = vad.check(mic_data)
-                if vad_data is None:
-                    pass
-                elif vad_data == "vad end":
-                    # logging.info("vad end:")
-                    # logging.info(final_data)
-                    # wf.write('test.wav', mic.samplerate, final_data)
-                    stt_data = stt.transcribe_translate(final_data)
+        mic_chunk = mic.get_chunk()
+        if len(mic_chunk) == mic.buffer_size*2:
+            if not (mic_chunk==mic_last_chunk).all():
+                mic_last_chunk = deepcopy(mic_chunk)
+                ui.update_spectrum_viz("You", mic_chunk)
+                vad_status = vad.check(mic_chunk, mic.buffer_size*2, mic.samplerate)
+                if vad_status is None:
+                    mic.reset_recording()
+                    skip_sleep = True
+                elif vad_status == "vad_end":
                     mic.stop_mic()
+                    ui.update_spectrum_viz("system", None)
+                    mic_recording = mic.get_recording()
+                    # wf.write('test.wav', mic.samplerate, mic_recording)
+                    stt_data = stt.transcribe_translate(mic_recording)
                     ap.play_sound(ap.speaking_sound, ap.speaking_sound_sr)
                     if len(stt_data) != 1:
                         ui.add_message("You", stt_data, new_entry=True)
@@ -88,16 +88,12 @@ def main(ui, config):
                     ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
                     print("\n🎙...", end=" ")
                     mic.start_mic()
-                    final_data = None
                     skip_sleep = True
                 else:
-                    if final_data is None:
-                        final_data = deepcopy(mic_data)
-                    else:
-                        final_data = np.concatenate([final_data, mic_data])
                     # logging.info("respond starts in: " + str(vad.no_voice_wait_sec - vad.no_voice_sec))
+                    pass
         if not skip_sleep:
-            time.sleep(1)
+            time.sleep(mic.buffer_size*2 / mic.samplerate)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Aria.")

@@ -2,7 +2,7 @@
     "Mic": {
       "params": {
         "samplerate": 16000,
-        "buffer_size": 16000,
+        "buffer_size": 256,
         "channels": 1,
         "device": "default"
       }

@@ -13,3 +13,4 @@ huggingface-hub==0.20.3
 accelerate==0.26.1
 emoji==2.10.1
 TTS==0.22.0
+scipy==1.12.0
