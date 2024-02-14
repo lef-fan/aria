@@ -29,17 +29,17 @@
       }
     },
     "Llm": {
-        "params": {
-          "model_name": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
-          "model_file": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
-          "num_gpu_layers": -1,
-          "context_length": 8000,
-          "streaming_output": true,
-          "chat_format": "llama-2",
-          "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
-          "verbose": false
-        }
-      },
+      "params": {
+        "model_name": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
+        "model_file": "mixtral-8x7b-instruct-v0.1.Q4_K_M.gguf",
+        "num_gpu_layers": -1,
+        "context_length": 8000,
+        "streaming_output": true,
+        "chat_format": "llama-2",
+        "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
+        "verbose": false
+      }
+    },
     "Tts": {
       "params": {
         "device": "gpu",
@@ -57,13 +57,14 @@
       }
     },
     "Ap": {
-        "params": {
-            "assets": {
-                "listening_sound": "assets/listening.wav",
-                "speaking_sound": "assets/speaking.wav"
-            }
-        }
-      },
+      "params": {
+        "device": "default",
+        "assets": {
+          "listening_sound": "assets/listening.wav",
+          "speaking_sound": "assets/speaking.wav"
+          }
+      }
+    },
     "Ui": {
       "params": {
         "window_title": "Aria",
