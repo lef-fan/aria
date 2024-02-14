@@ -16,10 +16,10 @@ class Ui:
         self.root.iconphoto(True, icon_image)
         self.root.geometry(f"{self.window_size}x{self.window_size}")
         self.root.configure(bg="black")
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
         
         self.spectrum_widget = tk.Canvas(self.root, bg="black", width=self.window_size, height=int(int(self.window_size)/2))
-        self.spectrum_widget.pack(expand=True, fill="x", padx=10, pady=10)
+        self.spectrum_widget.pack(expand=True, fill="both", padx=10, pady=10)
         
         self.center_x, self.center_y = int(int(self.window_size)/2), int(int(self.window_size)/4)
         self.radius = 100
@@ -41,10 +41,32 @@ class Ui:
         self.text_widget.pack(expand=True, fill="both", padx=10, pady=10)
         self.scrollbar.configure(command=self.text_widget.yview)
         
+        self.context_menu = tk.Menu(self.root, tearoff=0, fg="white", bg="black")
+        self.context_menu.add_command(label="Copy", command=self.copy_text, state="disabled")
+        self.text_widget.bind("<Button-3>", self.show_context_menu)
+        self.text_widget.bind("<Button-1>", self.close_context_menu)
+        
         self.update_spectrum_viz("system", None)
         
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.kill = False
+        
+    def show_context_menu(self, event):
+        self.context_menu.post(event.x_root, event.y_root)
+        if self.text_widget.tag_ranges(tk.SEL):
+            self.context_menu.entryconfig("Copy", state="normal")
+        else:
+            self.context_menu.entryconfig("Copy", state="disabled")
+        self.context_menu.post(event.x_root, event.y_root)
+    
+    def close_context_menu(self, event):
+        self.context_menu.unpost()
+        
+    def copy_text(self):
+        if self.text_widget.tag_ranges(tk.SEL):
+            selected_text = self.text_widget.get(tk.SEL_FIRST, tk.SEL_LAST)
+            self.text_widget.clipboard_clear()
+            self.text_widget.clipboard_append(selected_text)
         
     def update_spectrum_viz(self, user_name, data):
         if user_name == "You":
@@ -56,6 +78,9 @@ class Ui:
             scaled_radius = min(amplitude * sensitivity_factor, max_radius)
             self.radius = int(0.9 * self.radius + 0.1 * max(scaled_radius, self.min_radius))
             self.spectrum_widget.delete("all")
+            current_window_width = self.root.winfo_width()
+            current_window_height = self.root.winfo_height()
+            self.center_x, self.center_y = int(int(current_window_width)/2), int(int(current_window_height)/4)
             oval_coords = (
                 self.center_x - self.radius,
                 self.center_y - self.radius,
@@ -71,7 +96,7 @@ class Ui:
             self.spectrum_widget.delete("all")
             self.spectrum_widget.update()
 
-    def add_message(self, user_name, text, new_entry=False):
+    def add_message(self, user_name, text, new_entry=False, color_code_block=False):
         if "You" in user_name:
             color = '#71CA2C'
         elif "Aria" in user_name:
@@ -80,7 +105,11 @@ class Ui:
             self.text_widget.config(state="normal")
             if new_entry:
                 self.text_widget.insert("end", '\n\n' + user_name + ": ", (color, "bold"))
-            self.text_widget.insert("end", text, "normal")        
+            if color_code_block:
+                color = "#2C87CA"
+                self.text_widget.insert("end", text, (color))
+            else:
+                self.text_widget.insert("end", text, "normal")        
             self.text_widget.tag_configure(color, foreground=color)
             self.text_widget.tag_configure("bold", font=("Arial", 12, "bold"))
             self.text_widget.config(state="disabled")

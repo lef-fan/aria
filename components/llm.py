@@ -50,21 +50,23 @@ class Llm:
         if self.streaming_output:
             llm_output = ""
             tts_text_buffer = []
+            color_code_block = False
             skip_code_block_on_tts = False
             ui.add_message("Aria", "", new_entry=True)
             for i, out in enumerate(outputs):
                 if "content" in out['choices'][0]["delta"]:
                     output_chunk_txt = out['choices'][0]["delta"]['content']
-                    if i == 1:
-                        print('Aria:', output_chunk_txt.strip(), end='')
-                        ui.add_message("Aria", output_chunk_txt.strip(), new_entry=False)
-                    else:
-                        print(output_chunk_txt, end='')
-                        ui.add_message("Aria", output_chunk_txt, new_entry=False)
-                    sys.stdout.flush()
-                    llm_output += output_chunk_txt
                     if output_chunk_txt == "``":
                         skip_code_block_on_tts = not skip_code_block_on_tts
+                        color_code_block = not color_code_block
+                    if i == 1:
+                        print('Aria:', output_chunk_txt.strip(), end='')
+                        ui.add_message("Aria", output_chunk_txt.strip(), new_entry=False, color_code_block=color_code_block)
+                    else:
+                        print(output_chunk_txt, end='')
+                        ui.add_message("Aria", output_chunk_txt, new_entry=False, color_code_block=color_code_block)
+                    sys.stdout.flush()
+                    llm_output += output_chunk_txt
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
                         if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:

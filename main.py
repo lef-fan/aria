@@ -62,19 +62,19 @@ def main(ui, config):
                     skip_sleep = True
                 elif vad_status == "vad_end":
                     mic.stop_mic()
+                    ap.play_sound(ap.speaking_sound, ap.speaking_sound_sr)
                     ui.update_spectrum_viz("system", None)
                     mic_recording = mic.get_recording()
                     # wf.write('test.wav', mic.samplerate, mic_recording)
                     stt_data = stt.transcribe_translate(mic_recording)
-                    ap.play_sound(ap.speaking_sound, ap.speaking_sound_sr)
                     if len(stt_data) != 1:
                         ui.add_message("You", stt_data, new_entry=True)
                         print("You:", stt_data)
                         print("🤖...", end=" ")
                         llm_data = llm.get_answer(ui, tts, stt_data)
                         if not llm.streaming_output:
-                            ui.add_message("Aria", llm_data, new_entry=True)
                             print("Aria:", llm_data)
+                            ui.add_message("Aria", llm_data, new_entry=True)
                             tts.text_splitting = True
                             tts_status = tts.run_tts(llm_data)
                             tts.check_last_chunk()
