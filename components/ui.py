@@ -97,6 +97,7 @@ class Ui:
             self.spectrum_widget.update()
 
     def add_message(self, user_name, text, new_entry=False, color_code_block=False):
+        color = "white"
         if "You" in user_name:
             color = '#71CA2C'
         elif "Aria" in user_name:
