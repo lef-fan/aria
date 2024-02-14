@@ -76,7 +76,7 @@ class Ui:
             max_radius = min(self.spectrum_widget.winfo_reqwidth(), self.spectrum_widget.winfo_reqheight()) * max_percentage / 2
             sensitivity_factor = 1500
             scaled_radius = min(amplitude * sensitivity_factor, max_radius)
-            self.radius = int(0.9 * self.radius + 0.1 * max(scaled_radius, self.min_radius))
+            self.radius = int(0.8 * self.radius + 0.2 * max(scaled_radius, self.min_radius))
             self.spectrum_widget.delete("all")
             current_window_width = self.root.winfo_width()
             current_window_height = self.root.winfo_height()
