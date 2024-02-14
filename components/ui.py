@@ -68,7 +68,7 @@ class Ui:
             self.text_widget.clipboard_clear()
             self.text_widget.clipboard_append(selected_text)
         
-    def update_spectrum_viz(self, user_name, data):
+    def update_spectrum_viz(self, user_name, data, time_color_warning=0):
         if user_name == "You":
             spectrum = np.abs(scipy.fft.fft(data))
             amplitude = spectrum.mean()
@@ -87,7 +87,17 @@ class Ui:
                 self.center_x + self.radius,
                 self.center_y + self.radius
             )
-            self.spectrum_widget.create_oval(oval_coords, outline="white", width=2, fill="white")
+            if 0 < time_color_warning < 0.5:
+                color = "#FF0000"
+            elif 0.5 < time_color_warning < 1:
+                color = "#B93C3C"
+            elif 1 < time_color_warning < 1.5:
+                color = "#8A4B4B"
+            elif 1.5 < time_color_warning < 2:
+                color = "#584848"
+            else:
+                color = "#FFFFFF"
+            self.spectrum_widget.create_oval(oval_coords, outline=color, width=2, fill=color)
             self.spectrum_widget.update()
         elif user_name == "Aria":
             self.spectrum_widget.delete("all")

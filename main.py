@@ -55,7 +55,7 @@ def main(ui, config):
         if len(mic_chunk) == mic.buffer_size*2:
             if not (mic_chunk==mic_last_chunk).all():
                 mic_last_chunk = deepcopy(mic_chunk)
-                ui.update_spectrum_viz("You", mic_chunk)
+                ui.update_spectrum_viz("You", mic_chunk, time_color_warning=vad.no_voice_wait_sec - vad.no_voice_sec)
                 vad_status = vad.check(mic_chunk, mic.buffer_size*2, mic.samplerate)
                 if vad_status is None:
                     mic.reset_recording()
