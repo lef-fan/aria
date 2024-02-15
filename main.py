@@ -52,11 +52,11 @@ def main(ui, config):
             print("\nShutting down...")
             break
         mic_chunk = mic.get_chunk()
-        if len(mic_chunk) == mic.buffer_size*2:
+        if len(mic_chunk) == mic.buffer_size:
             if not (mic_chunk==mic_last_chunk).all():
                 mic_last_chunk = deepcopy(mic_chunk)
                 ui.update_spectrum_viz("You", mic_chunk, time_color_warning=vad.no_voice_wait_sec - vad.no_voice_sec)
-                vad_status = vad.check(mic_chunk, mic.buffer_size*2, mic.samplerate)
+                vad_status = vad.check(mic_chunk, mic.buffer_size / mic.samplerate)
                 if vad_status is None:
                     mic.reset_recording()
                     skip_sleep = True
@@ -94,7 +94,7 @@ def main(ui, config):
                     # logging.info("respond starts in: " + str(vad.no_voice_wait_sec - vad.no_voice_sec))
                     pass
         if not skip_sleep:
-            time.sleep(mic.buffer_size*2 / mic.samplerate)
+            time.sleep(mic.buffer_size / mic.samplerate)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Aria.")

@@ -44,16 +44,16 @@ class Vad:
             speech_pad_ms=30
             )        
 
-    def check(self, mic_chunk, mic_buffer_size, mic_samplerate):
+    def check(self, mic_chunk, chunk_time):
         speech_dict = self.vad_iterator(mic_chunk, return_seconds=False)
         if speech_dict is not None:
             if "start" in speech_dict:
                 self.no_voice_sec = 0
             elif "end" in speech_dict:
-                self.no_voice_sec += mic_buffer_size / mic_samplerate
+                self.no_voice_sec += chunk_time
         else:
             if self.no_voice_sec != 0:
-                self.no_voice_sec += mic_buffer_size / mic_samplerate
+                self.no_voice_sec += chunk_time
                 if self.no_voice_sec > self.no_voice_wait_sec:                
                     self.no_voice_sec = 0
                     self.vad_iterator.reset_states()

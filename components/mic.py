@@ -41,7 +41,7 @@ class Mic:
         
     def get_chunk(self):
         # return np.frombuffer(self._chunk_buffer, np.float32).flatten()
-        return np.frombuffer(self._recording_buffer[-(self.buffer_size*4)*2:], np.float32).flatten()
+        return np.frombuffer(self._recording_buffer[-(self.buffer_size*4):], np.float32).flatten()
     
     def start_mic(self):
         # self._chunk_buffer = bytes()
