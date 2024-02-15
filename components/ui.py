@@ -70,36 +70,35 @@ class Ui:
         
     def update_spectrum_viz(self, user_name, data, time_color_warning=0):
         if user_name == "You":
-            for i in range(3):
-                spectrum = np.abs(scipy.fft.fft(data))
-                amplitude = spectrum.mean()
-                max_percentage = 0.85
-                max_radius = min(self.spectrum_widget.winfo_reqwidth(), self.spectrum_widget.winfo_reqheight()) * max_percentage / 2
-                sensitivity_factor = 1000 + (500 * i)
-                scaled_radius = min(amplitude * sensitivity_factor, max_radius)
-                self.radius = int(0.8 * self.radius + 0.2 * max(scaled_radius, self.min_radius))
-                self.spectrum_widget.delete("all")
-                current_window_width = self.root.winfo_width()
-                current_window_height = self.root.winfo_height()
-                self.center_x, self.center_y = int(int(current_window_width)/2), int(int(current_window_height)/4)
-                oval_coords = (
-                    self.center_x - self.radius,
-                    self.center_y - self.radius,
-                    self.center_x + self.radius,
-                    self.center_y + self.radius
-                )
-                if 0 < time_color_warning < 0.5:
-                    color = "#FF0000"
-                elif 0.5 < time_color_warning < 1:
-                    color = "#B93C3C"
-                elif 1 < time_color_warning < 1.5:
-                    color = "#8A4B4B"
-                elif 1.5 < time_color_warning < 2:
-                    color = "#584848"
-                else:
-                    color = "#FFFFFF"
-                self.spectrum_widget.create_oval(oval_coords, outline=color, width=2, fill=color)
-                self.spectrum_widget.update()
+            spectrum = np.abs(scipy.fft.fft(data))
+            amplitude = spectrum.mean()
+            max_percentage = 0.85
+            max_radius = min(self.spectrum_widget.winfo_reqwidth(), self.spectrum_widget.winfo_reqheight()) * max_percentage / 2
+            sensitivity_factor = 1000
+            scaled_radius = min(amplitude * sensitivity_factor, max_radius)
+            self.radius = int(0.8 * self.radius + 0.2 * max(scaled_radius, self.min_radius))
+            self.spectrum_widget.delete("all")
+            current_window_width = self.root.winfo_width()
+            current_window_height = self.root.winfo_height()
+            self.center_x, self.center_y = int(int(current_window_width)/2), int(int(current_window_height)/4)
+            oval_coords = (
+                self.center_x - self.radius,
+                self.center_y - self.radius,
+                self.center_x + self.radius,
+                self.center_y + self.radius
+            )
+            if 0 < time_color_warning < 0.5:
+                color = "#FF0000"
+            elif 0.5 < time_color_warning < 1:
+                color = "#B93C3C"
+            elif 1 < time_color_warning < 1.5:
+                color = "#8A4B4B"
+            elif 1.5 < time_color_warning < 2:
+                color = "#584848"
+            else:
+                color = "#FFFFFF"
+            self.spectrum_widget.create_oval(oval_coords, outline=color, width=2, fill=color)
+            self.spectrum_widget.update()
         elif user_name == "Aria":
             self.spectrum_widget.delete("all")
             self.spectrum_widget.update()
