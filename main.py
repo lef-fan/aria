@@ -65,6 +65,7 @@ def main(ui, config):
                     ap.play_sound(ap.speaking_sound, ap.speaking_sound_sr)
                     ui.update_spectrum_viz("system", None)
                     mic_recording = mic.get_recording()
+                    mic_recording = mic_recording[:-vad.no_voice_wait_sec*mic.samplerate]
                     # wf.write('test.wav', mic.samplerate, mic_recording)
                     stt_data = stt.transcribe_translate(mic_recording)
                     if len(stt_data) != 1:
