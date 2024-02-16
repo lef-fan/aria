@@ -31,7 +31,7 @@ class Tts:
                         output=True
                         )
 
-        self.last_chunk_length = None
+        self.last_chunk_length = self.buffer_size
         
         if not self.verbose:
             warnings.filterwarnings("ignore", module="TTS")

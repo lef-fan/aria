@@ -35,24 +35,29 @@ class Vad:
         ) = self.silero_utils
 
         self.no_voice_sec = 0
-        self.voice_trigger = False
-
-    def check(self, data):
-        speech_timestamps = self.get_speech_timestamps(
-            data,
+        
+        self.vad_iterator = self.VADIterator(
             self.silero_vad_model,
-            sampling_rate=self.samplerate
-        )
-        if len(speech_timestamps) > 0:
-            self.voice_trigger = True
-            self.no_voice_sec = 0
+            threshold=0.5,
+            sampling_rate=self.samplerate,
+            min_silence_duration_ms=100,
+            speech_pad_ms=30
+            )        
+
+    def check(self, mic_chunk, chunk_time):
+        speech_dict = self.vad_iterator(mic_chunk, return_seconds=False)
+        if speech_dict is not None:
+            if "start" in speech_dict:
+                self.no_voice_sec = 0
+            elif "end" in speech_dict:
+                self.no_voice_sec += chunk_time
         else:
-            if self.voice_trigger:
-                self.no_voice_sec += 1
-                if self.no_voice_sec == self.no_voice_wait_sec:
-                    self.voice_trigger = False
+            if self.no_voice_sec != 0:
+                self.no_voice_sec += chunk_time
+                if self.no_voice_sec > self.no_voice_wait_sec:                
                     self.no_voice_sec = 0
-                    return "vad end"
-            else:
+                    self.vad_iterator.reset_states()
+                    return "vad_end"
+            elif not self.vad_iterator.triggered:
                 return None
-        return "vad continue"
+        return "vad_continue"

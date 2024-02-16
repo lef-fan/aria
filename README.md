@@ -4,9 +4,12 @@ Meet Aria. A local and uncensored AI entity.
 ![Aria](https://github.com/lef-fan/aria/blob/main/assets/aria.png?raw=true)
 
 ## Installation
+Clone the repo.\
 Install required libs.
 
 [For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
+
+(Tested on Linux + NVIDIA GPUs)
 
 More are coming, work in progress...
 
@@ -14,6 +17,8 @@ More are coming, work in progress...
 ```
 python main.py
 ```
+You may edit the default config for your device or use case (change model, specify devices, etc...)\
+If you have the resources, strongly recommended to use a model of bigger quant method such as: ```mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf```
 
 ## Documentation
 Work in progress...
@@ -32,6 +37,14 @@ We encourage users to exercise discernment, judgment, and thorough consideration
 
 Should you have any doubts regarding the accuracy or suitability of Aria's responses, we advise consulting with qualified professionals or experts in the relevant field.
 
+## Acknowledgments
+
+- [silero-vad](https://github.com/snakers4/silero-vad)
+- [transformers](https://github.com/huggingface/transformers)
+- [whisper](https://github.com/openai/whisper)
+- [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
+- [TTS](https://github.com/coqui-ai/TTS)
+- [TheBloke](https://huggingface.co/TheBloke)
 
 ## License Information
 

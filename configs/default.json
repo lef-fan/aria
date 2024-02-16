@@ -2,7 +2,7 @@
     "Mic": {
       "params": {
         "samplerate": 16000,
-        "buffer_size": 16000,
+        "buffer_size": 512,
         "channels": 1,
         "device": "default"
       }
@@ -57,13 +57,14 @@
       }
     },
     "Ap": {
-        "params": {
-            "assets": {
-                "listening_sound": "assets/listening.wav",
-                "speaking_sound": "assets/speaking.wav"
-            }
-        }
-      },
+      "params": {
+        "device": "default",
+        "assets": {
+          "listening_sound": "assets/listening.wav",
+          "speaking_sound": "assets/speaking.wav"
+          }
+      }
+    },
     "Ui": {
       "params": {
         "window_title": "Aria",

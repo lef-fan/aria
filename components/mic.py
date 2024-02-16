@@ -16,29 +16,40 @@ class Mic:
             self.device = None
         
         p = pyaudio.PyAudio()
-        self.stream = p.open(
+        self._stream = p.open(
             format=self.sample_format,
             channels=self.channels,
             rate=self.samplerate,
             frames_per_buffer=self.buffer_size,
             input=True,
             input_device_index=self.device,
-            # stream_callback=self._update_data,
+            stream_callback=self._callback,
+            start=False
         )
         
-        self.data = None
+        # self._chunk_buffer = bytes()
+        self._recording_buffer = bytearray()
 
-    def _update_data(self, in_data, frame_count, time_info, status):
-        self.data = np.frombuffer(in_data, np.float32).flatten()
+    def _callback(self, in_data, frame_count, time_info, status):
+        # self._chunk_buffer = in_data
+        # self._recording_buffer.extend(self._chunk_buffer)
+        self._recording_buffer.extend(in_data)
         return (in_data, pyaudio.paContinue)
 
-    def get_data(self):
-        # return self.data
-        self.data = self.stream.read(self.buffer_size)
-        return np.frombuffer(self.data, np.float32).flatten()
+    def get_recording(self):
+        return np.frombuffer(self._recording_buffer, np.float32).flatten()
+        
+    def get_chunk(self):
+        # return np.frombuffer(self._chunk_buffer, np.float32).flatten()
+        return np.frombuffer(self._recording_buffer[-(self.buffer_size*4):], np.float32).flatten()
     
     def start_mic(self):
-        self.stream.start_stream()
+        # self._chunk_buffer = bytes()
+        self._recording_buffer = bytearray()
+        self._stream.start_stream()
     
     def stop_mic(self):
-        self.stream.stop_stream()
+        self._stream.stop_stream()
+        
+    def reset_recording(self):
+        self._recording_buffer = bytearray()
