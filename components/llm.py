@@ -69,9 +69,11 @@ class Llm:
                     llm_output += output_chunk_txt
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
-                        if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]: # TODO fix last sentence when not code and not have any of the stops 
+                        if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:
                             tts.run_tts(ui, remove_emojis("".join(tts_text_buffer).strip())) # TODO remove multi dots
                             tts_text_buffer = []
+            if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
+                tts.run_tts(ui, remove_emojis("".join(tts_text_buffer).strip())) # TODO remove multi dots
             tts.check_audio_finished()
             print()
             llm_output = llm_output.strip()
