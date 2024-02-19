@@ -2,8 +2,6 @@ import sys
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 from .utils import remove_emojis
-from .utils import remove_multiple_dots
-from .utils import remove_code_blocks
 
 
 class Llm:
@@ -47,6 +45,8 @@ class Llm:
             self.messages,
             stream=self.streaming_output
             )
+        ui.load_visual("Aria")
+        
         if self.streaming_output:
             llm_output = ""
             tts_text_buffer = []
@@ -56,7 +56,7 @@ class Llm:
             for i, out in enumerate(outputs):
                 if "content" in out['choices'][0]["delta"]:
                     output_chunk_txt = out['choices'][0]["delta"]['content']
-                    if output_chunk_txt == "``":
+                    if output_chunk_txt == "``": # TODO remove the remaining backticks in ui
                         skip_code_block_on_tts = not skip_code_block_on_tts
                         color_code_block = not color_code_block
                     if i == 1:
@@ -69,10 +69,10 @@ class Llm:
                     llm_output += output_chunk_txt
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
-                        if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:
-                            tts.run_tts(remove_emojis("".join(tts_text_buffer).strip()))
+                        if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]: # TODO fix last sentence when not code and not have any of the stops 
+                            tts.run_tts(ui, remove_emojis("".join(tts_text_buffer).strip())) # TODO remove multi dots
                             tts_text_buffer = []
-            tts.check_last_chunk()
+            tts.check_audio_finished()
             print()
             llm_output = llm_output.strip()
         else:
@@ -84,8 +84,5 @@ class Llm:
                 "content": llm_output
             }
         )
-        
-        if not self.streaming_output:
-            llm_output = remove_emojis(remove_multiple_dots(remove_code_blocks(llm_output)))
         
         return llm_output

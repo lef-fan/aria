@@ -42,9 +42,10 @@
     },
     "Tts": {
       "params": {
+        "audio_device": "default",
         "device": "gpu",
         "samplerate": 24000,
-        "buffer_size": 24000,
+        "buffer_size": 1024,
         "channels": 1,
         "use_deepspeed": false,
         "text_splitting": false,
@@ -61,7 +62,7 @@
         "device": "default",
         "assets": {
           "listening_sound": "assets/listening.wav",
-          "speaking_sound": "assets/speaking.wav"
+          "transition_sound": "assets/transition.wav"
           }
       }
     },
@@ -70,7 +71,10 @@
         "window_title": "Aria",
         "window_size": "750",
         "assets": {
-          "icon": "assets/aria_icon.png"
+          "icon": "assets/aria_icon.png",
+          "loading_gif": "assets/loading.gif",
+          "transition_gif": "assets/transition.gif",
+          "muted_mic_gif": "assets/muted_mic.gif"
         }
       }
     }

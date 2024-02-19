@@ -42,7 +42,11 @@ class Vad:
             sampling_rate=self.samplerate,
             min_silence_duration_ms=100,
             speech_pad_ms=30
-            )        
+            ) 
+        
+    def reset_vad(self):
+        self.no_voice_sec = 0
+        self.vad_iterator.reset_states()   
 
     def check(self, mic_chunk, chunk_time):
         speech_dict = self.vad_iterator(mic_chunk, return_seconds=False)
