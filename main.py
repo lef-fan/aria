@@ -18,6 +18,7 @@ from components.ui import Ui
 from components.utils import remove_emojis
 from components.utils import remove_multiple_dots
 from components.utils import remove_code_blocks
+from components.utils import find_code_blocks
 # import scipy.io.wavfile as wf
 
 
@@ -89,7 +90,12 @@ def main(ui, config):
                         llm_data = llm.get_answer(ui, tts, stt_data)
                         if not llm.streaming_output:
                             print("Aria:", llm_data)
-                            ui.add_message("Aria", llm_data, new_entry=True) # TODO add color codeblocks as well
+                            code_blocks = find_code_blocks(llm_data)
+                            if len(code_blocks) > 0:
+                                color_code_block = True
+                            else:
+                                color_code_block = False
+                            ui.add_message("Aria", llm_data, new_entry=True, color_code_block=color_code_block, code_blocks=code_blocks)
                             tts.text_splitting = True
                             tts.run_tts(ui, remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data))))
                             tts.check_audio_finished()

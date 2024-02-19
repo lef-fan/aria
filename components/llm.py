@@ -70,10 +70,16 @@ class Llm:
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
                         if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:
-                            tts.run_tts(ui, remove_emojis("".join(tts_text_buffer).strip())) # TODO remove multi dots
+                            # TODO remove multi dots
+                            txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
+                            if len(txt_for_tts) > 1:
+                                tts.run_tts(ui, txt_for_tts)
                             tts_text_buffer = []
             if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
-                tts.run_tts(ui, remove_emojis("".join(tts_text_buffer).strip())) # TODO remove multi dots
+                # TODO remove multi dots
+                txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
+                if len(txt_for_tts) > 1:
+                    tts.run_tts(ui, txt_for_tts)
             tts.check_audio_finished()
             print()
             llm_output = llm_output.strip()

@@ -76,6 +76,14 @@ class Ui:
         self.speaking_BAR_WIDTH = 20
         self.speaking_BAR_SPACING = 10
         
+        you_color = '#71CA2C'
+        aria_color = "#7441B1"
+        code_color = "#2C87CA"
+        self.text_widget.tag_configure("user_name_You", foreground=you_color, font=("Arial", 12, "bold"))
+        self.text_widget.tag_configure("user_name_Aria", foreground=aria_color, font=("Arial", 12, "bold"))
+        self.text_widget.tag_configure("normal_text", foreground="white")
+        self.text_widget.tag_configure("code", foreground=code_color)
+        
         self.root.bind("<Configure>", self.on_resize)
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.kill = False
@@ -196,23 +204,23 @@ class Ui:
             self.text_widget.clipboard_clear()
             self.text_widget.clipboard_append(selected_text)
 
-    def add_message(self, user_name, text, new_entry=False, color_code_block=False):
-        color = "white"
-        if "You" in user_name:
-            color = '#71CA2C'
-        elif "Aria" in user_name:
-            color = "#7441B1"
+    def add_message(self, user_name, text, new_entry=False, color_code_block=False, code_blocks=[]):
         try:
             self.text_widget.config(state="normal")
             if new_entry:
-                self.text_widget.insert("end", '\n\n' + user_name + ": ", (color, "bold"))
+                self.text_widget.insert("end", '\n\n' + user_name + ": ", "user_name_" + user_name)
             if color_code_block:
-                color = "#2C87CA"
-                self.text_widget.insert("end", text, (color))
+                if len(code_blocks) > 0:
+                    current_pos = 0
+                    for block_start, block_end in code_blocks:
+                        self.text_widget.insert("end", text[current_pos:block_start], "normal_text")
+                        self.text_widget.insert("end", text[block_start + 3:block_end - 2], "code")
+                        current_pos = block_end + 1 
+                    self.text_widget.insert("end", text[current_pos:], "normal_text")  
+                else:    
+                    self.text_widget.insert("end", text, "code")
             else:
-                self.text_widget.insert("end", text, "normal")        
-            self.text_widget.tag_configure(color, foreground=color)
-            self.text_widget.tag_configure("bold", font=("Arial", 12, "bold"))
+                self.text_widget.insert("end", text, "normal_text")
             self.text_widget.config(state="disabled")
             self.text_widget.update()
             self.text_widget.see("end")
