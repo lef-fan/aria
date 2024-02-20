@@ -14,7 +14,7 @@
         "model_name": "silero_vad",
         "force_reload": false,
         "use_onnx": true,
-        "no_voice_wait_sec": 2,
+        "no_voice_wait_sec": 1,
         "onnx_verbose": false,
         "verbose": false
       }

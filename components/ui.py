@@ -116,13 +116,13 @@ class Ui:
                 self.visual_x + self.listening_radius,
                 self.visual_y + self.listening_radius
             )
-            if 0 < time_color_warning < 0.5:
+            if 0 < time_color_warning < 0.25:
                 self.listening_color = "#FF0000"
-            elif 0.5 < time_color_warning < 1:
+            elif 0.25 < time_color_warning < 0.5:
                 self.listening_color = "#B93C3C"
-            elif 1 < time_color_warning < 1.5:
+            elif 0.5 < time_color_warning < 0.75:
                 self.listening_color = "#8A4B4B"
-            elif 1.5 < time_color_warning < 2:
+            elif 0.75 < time_color_warning < 1:
                 self.listening_color = "#584848"
             else:
                 self.listening_color = "#FFFFFF"
