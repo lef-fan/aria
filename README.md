@@ -3,6 +3,8 @@ Meet Aria. A local and uncensored AI entity.
 
 ![Aria](https://github.com/lef-fan/aria/blob/main/assets/aria.png?raw=true)
 
+https://github.com/lef-fan/aria/assets/23457676/d90b3f04-6d56-43a7-86ab-674fc558abe2
+
 ## Installation
 Clone the repo.\
 Install required libs.
