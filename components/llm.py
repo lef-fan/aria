@@ -71,6 +71,7 @@ class Llm:
                         tts_text_buffer.append(output_chunk_txt)
                         if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:
                             # TODO remove multi dots
+                            # TODO handle emphasis
                             txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
                             if len(txt_for_tts) > 1:
                                 tts.run_tts(ui, txt_for_tts)

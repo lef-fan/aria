@@ -97,6 +97,7 @@ def main(ui, config):
                                 color_code_block = False
                             ui.add_message("Aria", llm_data, new_entry=True, color_code_block=color_code_block, code_blocks=code_blocks)
                             tts.text_splitting = True
+                            # TODO handle emphasis
                             tts.run_tts(ui, remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data))))
                             tts.check_audio_finished()
                     else:
