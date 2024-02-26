@@ -51,25 +51,34 @@ class Llm:
             llm_output = ""
             tts_text_buffer = []
             color_code_block = False
+            backticks = 0
             skip_code_block_on_tts = False
             ui.add_message("Aria", "", new_entry=True)
             for i, out in enumerate(outputs):
                 if "content" in out['choices'][0]["delta"]:
                     output_chunk_txt = out['choices'][0]["delta"]['content']
-                    if output_chunk_txt == "``": # TODO remove the remaining backticks in ui
+                    if output_chunk_txt == "``" and backticks == 0:
                         skip_code_block_on_tts = not skip_code_block_on_tts
                         color_code_block = not color_code_block
+                        backticks += 2
+                    if backticks > 0 and backticks <= 3:
+                        backticks += 1
+                    else:
+                        backticks = 0
                     if i == 1:
                         print('Aria:', output_chunk_txt.strip(), end='')
-                        ui.add_message("Aria", output_chunk_txt.strip(), new_entry=False, color_code_block=color_code_block)
+                        if backticks == 0:
+                            ui.add_message("Aria", output_chunk_txt.strip(), new_entry=False, color_code_block=color_code_block)
                     else:
                         print(output_chunk_txt, end='')
-                        ui.add_message("Aria", output_chunk_txt, new_entry=False, color_code_block=color_code_block)
+                        if backticks == 0:
+                            ui.add_message("Aria", output_chunk_txt, new_entry=False, color_code_block=color_code_block)
                     sys.stdout.flush()
                     llm_output += output_chunk_txt
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
                         if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:
+                            # TODO handle float numbers
                             # TODO remove multi dots
                             # TODO handle emphasis
                             txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
