@@ -12,7 +12,6 @@ soundfile==0.12.1
 llama_cpp_python==0.2.38
 huggingface-hub==0.20.3
 accelerate==0.26.1
-emoji==2.10.1
 TTS==0.22.0
 scipy==1.12.0
 Pillow==9.5.0
