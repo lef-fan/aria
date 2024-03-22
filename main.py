@@ -7,7 +7,6 @@ import time
 import threading
 from copy import deepcopy
 from os.path import join
-import numpy as np
 from components.vad import Vad
 from components.stt import Stt
 from components.llm import Llm
@@ -41,13 +40,13 @@ def main(ui, config):
     vad = Vad(params=vad_params)
     stt = Stt(params=stt_params)
     llm = Llm(params=llm_params)
-    tts = Tts(params=tts_params)
-    ap = Ap(params=ap_params)
-    mic = Mic(params=mic_params)
+    ap = Ap(params=ap_params, ui=ui)
+    tts = Tts(params=tts_params, ap=ap)
+    mic = Mic(params=mic_params, ui=ui, vad_params=vad_params)
     
     mic_muted = False
     mic_last_chunk = None
-    ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
+    ap.play_sound(ap.listening_sound)
     ui.load_visual("You")
     ui.add_message("system", "\nReady...", new_entry=False)
     print('Ready...\n\n🎙...', end= " ")
@@ -61,6 +60,7 @@ def main(ui, config):
         if len(mic_chunk) == mic.buffer_size:
             if max(mic_chunk) == 0 and not mic_muted:
                 mic_muted = True
+                mic.update_ui = False
                 ui.load_visual("system_muted_mic")
                 vad.reset_vad()
                 mic.reset_recording()
@@ -68,9 +68,9 @@ def main(ui, config):
             elif not (mic_chunk==mic_last_chunk).all() and max(mic_chunk) != 0:
                 if mic_muted:
                     ui.load_visual("You")
-                mic_muted = False
+                    mic.update_ui = True
+                    mic_muted = False
                 mic_last_chunk = deepcopy(mic_chunk)
-                ui.update_visual("You", mic_chunk, time_color_warning=vad.no_voice_wait_sec - vad.no_voice_sec)
                 vad_status = vad.check(mic_chunk, mic.buffer_size / mic.samplerate)
                 if vad_status is None:
                     mic.reset_recording()
@@ -78,7 +78,7 @@ def main(ui, config):
                 elif vad_status == "vad_end":
                     mic.stop_mic()
                     ui.load_visual("system_transition")
-                    ap.play_sound(ap.transition_sound, ap.transition_sound_sr)
+                    ap.play_sound(ap.transition_sound)
                     mic_recording = mic.get_recording()
                     mic_recording = mic_recording[:-vad.no_voice_wait_sec*mic.samplerate]
                     # wf.write('test.wav', mic.samplerate, mic_recording)
@@ -87,7 +87,7 @@ def main(ui, config):
                         ui.add_message("You", stt_data, new_entry=True)
                         print("You:", stt_data)
                         print("🤖...", end=" ")
-                        llm_data = llm.get_answer(ui, tts, stt_data)
+                        llm_data = llm.get_answer(ui, ap, tts, stt_data)
                         if not llm.streaming_output:
                             print("Aria:", llm_data)
                             code_blocks = find_code_blocks(llm_data)
@@ -98,17 +98,16 @@ def main(ui, config):
                             ui.add_message("Aria", llm_data, new_entry=True, color_code_block=color_code_block, code_blocks=code_blocks)
                             tts.text_splitting = True
                             # TODO handle emphasis
-                            tts.run_tts(ui, remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data))))
-                            tts.check_audio_finished()
+                            tts.run_tts(remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data))))
+                            ap.check_audio_finished()
                     else:
                         print("You: ...")
                         ui.add_message("Aria", "Did you say something?", new_entry=True)
                         print("🤖... Aria:", "Did you say something?")
-                        ui.load_visual("Aria")
-                        tts.run_tts(ui, "Did you say something?")
-                        tts.check_audio_finished()
+                        tts.run_tts("Did you say something?")
+                        ap.check_audio_finished()
                     time.sleep(1)
-                    ap.play_sound(ap.listening_sound, ap.listening_sound_sr)
+                    ap.play_sound(ap.listening_sound)
                     ui.load_visual("You")
                     print("\n🎙...", end=" ")
                     mic.start_mic()

@@ -1,4 +1,3 @@
-import sys
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 from .utils import remove_emojis
@@ -33,7 +32,7 @@ class Llm:
                 }
             ]
 
-    def get_answer(self, ui, ap, tts, data):
+    def get_answer(self, con, tts, data):
         self.messages.append(
             {
                 "role": "user", 
@@ -52,7 +51,7 @@ class Llm:
             color_code_block = False
             backticks = 0
             skip_code_block_on_tts = False
-            ui.add_message("Aria", "", new_entry=True)
+            con.sendall(b'ACK')
             for i, out in enumerate(outputs):
                 if "content" in out['choices'][0]["delta"]:
                     output_chunk_txt = out['choices'][0]["delta"]['content']
@@ -65,14 +64,25 @@ class Llm:
                     else:
                         backticks = 0
                     if i == 1:
-                        print('Aria:', output_chunk_txt.strip(), end='')
                         if backticks == 0:
-                            ui.add_message("Aria", output_chunk_txt.strip(), new_entry=False, color_code_block=color_code_block)
+                            ack = con.recv(1024)
+                            con.sendall(b'llm')
+                            ack = con.recv(1024)
+                            con.sendall(str(len(output_chunk_txt.strip().encode())).encode())
+                            ack = con.recv(1024)
+                            con.sendall(output_chunk_txt.strip().encode())
+                            ack = con.recv(1024)
+                            con.sendall(str(color_code_block).encode())
                     else:
-                        print(output_chunk_txt, end='')
                         if backticks == 0:
-                            ui.add_message("Aria", output_chunk_txt, new_entry=False, color_code_block=color_code_block)
-                    sys.stdout.flush()
+                            ack = con.recv(1024)
+                            con.sendall(b'llm')
+                            ack = con.recv(1024)
+                            con.sendall(str(len(output_chunk_txt.encode())).encode())
+                            ack = con.recv(1024)
+                            con.sendall(output_chunk_txt.encode())
+                            ack = con.recv(1024)
+                            con.sendall(str(color_code_block).encode())
                     llm_output += output_chunk_txt
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
@@ -82,15 +92,19 @@ class Llm:
                             # TODO handle emphasis
                             txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
                             if len(txt_for_tts) > 1:
-                                tts.run_tts(txt_for_tts)
+                                ack = con.recv(1024)
+                                con.sendall(b'tts')
+                                tts.run_tts(con, txt_for_tts)
                             tts_text_buffer = []
             if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
                 # TODO remove multi dots
                 txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
                 if len(txt_for_tts) > 1:
-                    tts.run_tts(txt_for_tts)
-            ap.check_audio_finished()
-            print()
+                    ack = con.recv(1024)
+                    con.sendall(b'tts')
+                    tts.run_tts(con, txt_for_tts)
+            ack = con.recv(1024)
+            con.sendall(b'streaming_end')
             llm_output = llm_output.strip()
         else:
             llm_output = outputs["choices"][0]["message"]["content"].strip()

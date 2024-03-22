@@ -65,7 +65,7 @@ class Ui:
         
         self.listening_color = "#FFFFFF"
         self.listening_max_percentage = 0.85
-        self.listening_sensitivity_factor = 1000
+        self.listening_sensitivity_factor = 1000 # TODO
         self.listening_min_radius = 50
         self.listening_radius = 100
         

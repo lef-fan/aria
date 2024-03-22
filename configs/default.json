@@ -1,10 +1,10 @@
 {
     "Mic": {
       "params": {
+        "audio_device": "default",
         "samplerate": 16000,
         "buffer_size": 512,
-        "channels": 1,
-        "device": "default"
+        "channels": 1
       }
     },
     "Vad": {
@@ -42,11 +42,7 @@
     },
     "Tts": {
       "params": {
-        "audio_device": "default",
         "device": "gpu",
-        "samplerate": 24000,
-        "buffer_size": 1024,
-        "channels": 1,
         "use_deepspeed": false,
         "text_splitting": false,
         "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
@@ -59,7 +55,10 @@
     },
     "Ap": {
       "params": {
-        "device": "default",
+        "audio_device": "default",
+        "samplerate": 24000,
+        "buffer_size": 1024,
+        "channels": 1,
         "assets": {
           "listening_sound": "assets/listening.wav",
           "transition_sound": "assets/transition.wav"
@@ -76,6 +75,13 @@
           "transition_gif": "assets/transition.gif",
           "muted_mic_gif": "assets/muted_mic.gif"
         }
+      }
+    },
+    "Nw": {
+      "params": {
+        "host_ip": "0.0.0.0",
+        "client_target_ip": "0.0.0.0",
+        "port": 12345
       }
     }
   }

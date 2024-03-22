@@ -7,7 +7,6 @@ onnxruntime==1.17.0
 transformers==4.38.0.dev0
 flash-attn==2.5.2
 deepspeed==0.13.2
-sounddevice==0.4.6
 soundfile==0.12.1
 llama_cpp_python==0.2.38
 huggingface-hub==0.20.3
