@@ -16,6 +16,9 @@ Install required libs.
 More are coming, work in progress...
 
 ## Usage
+You may edit the default config for your device or use case (change model, specify devices, etc...)\
+If you have the resources, strongly recommended to use a model of bigger quant method such as: ```mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf```
+
 ```
 python main.py
 ```
@@ -29,8 +32,6 @@ client machine (edit client target ip in the config):
 ```
 python client.py
 ```
-You may edit the default config for your device or use case (change model, specify devices, etc...)\
-If you have the resources, strongly recommended to use a model of bigger quant method such as: ```mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf```
 
 ## Documentation
 Work in progress...
