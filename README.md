@@ -11,7 +11,7 @@ Install required libs.
 
 [For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
 
-(Tested on Linux + NVIDIA GPUs)
+(Tested on Linux + NVIDIA GPUs with python 3.11)
 
 More are coming, work in progress...
 
