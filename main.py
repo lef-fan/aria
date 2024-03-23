@@ -98,8 +98,10 @@ def main(ui, config):
                             ui.add_message("Aria", llm_data, new_entry=True, color_code_block=color_code_block, code_blocks=code_blocks)
                             tts.text_splitting = True
                             # TODO handle emphasis
-                            tts.run_tts(remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data))))
-                            ap.check_audio_finished()
+                            txt_for_tts = remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data)))
+                            if not all(char.isspace() for char in txt_for_tts):
+                                tts.run_tts(txt_for_tts)
+                                ap.check_audio_finished()
                     else:
                         print("You: ...")
                         ui.add_message("Aria", "Did you say something?", new_entry=True)

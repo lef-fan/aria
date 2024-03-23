@@ -52,7 +52,8 @@ class Ap:
         return (data.tobytes(), pyaudio.paContinue)
     
     def check_audio_finished(self):
-        time.sleep(len(self.audio_buffer) / self.samplerate)
+        if self.audio_buffer is not None:
+            time.sleep(len(self.audio_buffer) / self.samplerate)
         self.update_ui = False
         self.load_visual_once = True
         

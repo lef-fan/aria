@@ -81,13 +81,13 @@ class Llm:
                             # TODO remove multi dots
                             # TODO handle emphasis
                             txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
-                            if len(txt_for_tts) > 1:
+                            if len(txt_for_tts) > 1 and not all(char.isspace() for char in txt_for_tts):
                                 tts.run_tts(txt_for_tts)
                             tts_text_buffer = []
             if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
                 # TODO remove multi dots
                 txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
-                if len(txt_for_tts) > 1:
+                if len(txt_for_tts) > 1 and not all(char.isspace() for char in txt_for_tts):
                     tts.run_tts(txt_for_tts)
             ap.check_audio_finished()
             print()

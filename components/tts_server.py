@@ -39,21 +39,22 @@ class Tts:
             )
     
     def run_tts(self, con, data):
-        tts_stream = self.model.inference_stream(
-                data,
-                "en",
-                self.gpt_cond_latent,
-                self.speaker_embedding,
-                enable_text_splitting=self.text_splitting
-            )
-        for chunk in tts_stream:
-            chunk = chunk.squeeze()
-            if self.device == 'gpu':
-                chunk = chunk.cpu()
-            ack = con.recv(1024)
-            con.sendall(str(len(chunk.numpy().tobytes())).encode())
-            ack = con.recv(1024)
-            con.sendall(chunk.numpy().tobytes())
+        if not all(char.isspace() for char in data):
+            tts_stream = self.model.inference_stream(
+                    data,
+                    "en",
+                    self.gpt_cond_latent,
+                    self.speaker_embedding,
+                    enable_text_splitting=self.text_splitting
+                )
+            for chunk in tts_stream:
+                chunk = chunk.squeeze()
+                if self.device == 'gpu':
+                    chunk = chunk.cpu()
+                ack = con.recv(1024)
+                con.sendall(str(len(chunk.numpy().tobytes())).encode())
+                ack = con.recv(1024)
+                con.sendall(chunk.numpy().tobytes())
         ack = con.recv(1024)
         con.sendall(b'tts_end')
         return 'tts_done'  

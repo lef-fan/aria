@@ -53,6 +53,7 @@ if __name__ == "__main__":
     while True:    
         client_data = con.recv(1024)
         if not client_data:
+            print("Client disconnected...")
             print("Server listening...")
             con, client_address = nw.server_listening()
             print("Client connected:", client_address)
@@ -84,6 +85,7 @@ if __name__ == "__main__":
                 con.sendall(llm_data.encode())
                 tts.text_splitting = True
                 # TODO handle emphasis
-                tts.run_tts(con, remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data))))
+                txt_for_tts = remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data)))
+                tts.run_tts(con, txt_for_tts)
         elif client_data == b'fixed_answer':
             tts.run_tts(con, "Did you say something?")
