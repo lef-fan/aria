@@ -43,7 +43,7 @@
     "Tts": {
       "params": {
         "device": "gpu",
-        "use_deepspeed": false,
+        "use_deepspeed": true,
         "text_splitting": false,
         "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
         "force_reload": false,

@@ -47,17 +47,17 @@ class Ui:
         
         loading_gif = Image.open(self.loading_gif)
         self.loading_frames = [
-            ImageTk.PhotoImage(frame.convert("RGBA").resize((250, 250), Image.ANTIALIAS)) 
+            ImageTk.PhotoImage(frame.convert("RGBA").resize((250, 250), Image.LANCZOS)) 
             for frame in ImageSequence.Iterator(loading_gif)]
         
         transition_gif = Image.open(self.transition_gif)
         self.transition_frames = [
-            ImageTk.PhotoImage(frame.convert("RGBA").resize((250, 250), Image.ANTIALIAS)) 
+            ImageTk.PhotoImage(frame.convert("RGBA").resize((250, 250), Image.LANCZOS)) 
             for frame in ImageSequence.Iterator(transition_gif)]
 
         muted_mic_gif = Image.open(self.muted_mic_gif)
         self.muted_mic_frames = [
-            ImageTk.PhotoImage(frame.convert("RGBA").resize((250, 250), Image.ANTIALIAS)) 
+            ImageTk.PhotoImage(frame.convert("RGBA").resize((250, 250), Image.LANCZOS)) 
             for frame in ImageSequence.Iterator(muted_mic_gif)]
         
         self.visual_x = int(int(self.window_size)/2)
