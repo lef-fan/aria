@@ -11,13 +11,20 @@ Install required libs.
 
 [For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
 
-(Tested on Linux + NVIDIA GPUs with python 3.11)
+Easy installation for server mode using docker:
+```
+docker buildx build --tag ghcr.io/lef-fan/aria-server:latest .
+```
+
+(Tested on Linux + NVIDIA GPUs with python >=3.10)
 
 More are coming, work in progress...
 
 ## Usage
+First run will take a while to download all the required models.\
 You may edit the default config for your device or use case (change model, specify devices, etc...)\
-If you have the resources, strongly recommended to use a model of bigger quant method such as: ```mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf```
+If you have the resources, strongly recommended to use a model of bigger quant method such as:\
+```mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf```
 
 ```
 python main.py
@@ -26,6 +33,11 @@ python main.py
 
 server machine:
 ```
+python server.py 
+```
+or docker for server:
+```
+docker run --net=host --gpus all --name aria-server -it ghcr.io/lef-fan/aria-server:latest
 python server.py
 ```
 client machine (edit client target ip in the config):
