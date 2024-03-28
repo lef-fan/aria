@@ -84,7 +84,7 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                     nw.receive_ack()
                     nw.send_audio(mic_recording.tobytes())
                     stt_data = nw.receive_msg()
-                    if len(stt_data) == 1:
+                    if len(stt_data) != 1:
                         ui.add_message("You", stt_data, new_entry=True)
                         nw.send_msg("llm_get_answer")
                         if not llm_params.get('streaming_output', None):
