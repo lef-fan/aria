@@ -46,46 +46,42 @@ if __name__ == "__main__":
     tts = Tts(params=tts_params)
     
     nw.server_init()
-    print("Server listening...")
-    con, client_address = nw.server_listening()
-    print("Client connected:", client_address)
+    client_address = nw.server_listening()
     
     while True:    
-        client_data = con.recv(1024)
+        client_data = nw.receive_msg()
         if not client_data:
             print("Client disconnected...")
-            print("Server listening...")
-            con, client_address = nw.server_listening()
-            print("Client connected:", client_address)
-        if client_data == b'reset_vad':
+            client_address = nw.server_listening()
+        if client_data == 'reset_vad':
             vad.reset_vad()
-            con.sendall(b'ACK')
-        elif client_data == b'vad_time':
+            nw.send_ack()
+        elif client_data == 'vad_time':
             vad_time = vad.no_voice_wait_sec - vad.no_voice_sec
-            con.sendall(str(vad_time).encode())
-        elif client_data == b'vad_check':
-            con.sendall(b'ACK')
-            mic_chunk = con.recv(mic_params.get('buffer_size', None)*4, socket.MSG_WAITALL)
+            nw.send_msg(str(vad_time))
+        elif client_data == 'vad_check':
+            nw.send_ack()
+            mic_chunk = nw.receive_audio(mic_params.get('buffer_size', None)*4)
             chunk_time = mic_params.get('buffer_size', None) / mic_params.get('samplerate', None)
             vad_status = vad.check(np.frombuffer(mic_chunk, np.float32).flatten(), chunk_time)
-            con.sendall(str(vad_status).encode())
-        elif client_data == b'stt_transcribe':
-            con.sendall(b'ACK')
-            mic_recording_size = con.recv(1024).decode()
-            con.sendall(b'ACK')
-            mic_recording = con.recv(int(mic_recording_size), socket.MSG_WAITALL)
+            nw.send_msg(str(vad_status))
+        elif client_data == 'stt_transcribe':
+            nw.send_ack()
+            mic_recording_size = nw.receive_msg()
+            nw.send_ack()
+            mic_recording = nw.receive_audio(int(mic_recording_size))
             # wf.write('test.wav', mic_params.get('samplerate', None), np.frombuffer(mic_recording, np.float32).flatten())
             stt_data = stt.transcribe_translate(np.frombuffer(mic_recording, np.float32).flatten())
-            con.sendall(stt_data.encode())
-        elif client_data == b'llm_get_answer':
-            llm_data = llm.get_answer(con, tts, stt_data)
+            nw.send_msg(stt_data)
+        elif client_data == 'llm_get_answer':
+            llm_data = llm.get_answer(nw, tts, stt_data)
             if not llm.streaming_output:
-                con.sendall(str(len(llm_data.encode())).encode())
-                ack = con.recv(1024)
-                con.sendall(llm_data.encode())
+                nw.send_msg(str(len(llm_data.encode())))
+                nw.receive_ack()
+                nw.send_msg(llm_data)
                 tts.text_splitting = True
                 # TODO handle emphasis
                 txt_for_tts = remove_emojis(remove_multiple_dots(remove_code_blocks(llm_data)))
-                tts.run_tts(con, txt_for_tts)
-        elif client_data == b'fixed_answer':
-            tts.run_tts(con, "Did you say something?")
+                tts.run_tts(nw, txt_for_tts)
+        elif client_data == 'fixed_answer':
+            tts.run_tts(nw, "Did you say something?")

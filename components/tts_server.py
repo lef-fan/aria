@@ -7,7 +7,7 @@ from TTS.tts.models.xtts import Xtts
 
 
 class Tts:
-    def __init__(self, params=None, con=None):
+    def __init__(self, params=None):
         self.params = params or {}
         self.device = self.params.get('device', None)
         self.use_deepspeed = self.params.get('use_deepspeed', None)
@@ -38,7 +38,7 @@ class Tts:
                 audio_path=[self.voice_to_clone]
             )
     
-    def run_tts(self, con, data):
+    def run_tts(self, nw, data):
         if not all(char.isspace() for char in data):
             tts_stream = self.model.inference_stream(
                     data,
@@ -51,10 +51,10 @@ class Tts:
                 chunk = chunk.squeeze()
                 if self.device == 'gpu':
                     chunk = chunk.cpu()
-                ack = con.recv(1024)
-                con.sendall(str(len(chunk.numpy().tobytes())).encode())
-                ack = con.recv(1024)
-                con.sendall(chunk.numpy().tobytes())
-        ack = con.recv(1024)
-        con.sendall(b'tts_end')
+                nw.receive_ack()
+                nw.send_msg(str(len(chunk.numpy().tobytes())))
+                nw.receive_ack()
+                nw.send_audio(chunk.numpy().tobytes())
+        nw.receive_ack()
+        nw.send_msg("tts_end")
         return 'tts_done'  

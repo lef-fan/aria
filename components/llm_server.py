@@ -32,7 +32,7 @@ class Llm:
                 }
             ]
 
-    def get_answer(self, con, tts, data):
+    def get_answer(self, nw, tts, data):
         self.messages.append(
             {
                 "role": "user", 
@@ -51,7 +51,7 @@ class Llm:
             color_code_block = False
             backticks = 0
             skip_code_block_on_tts = False
-            con.sendall(b'ACK')
+            nw.send_ack()
             for i, out in enumerate(outputs):
                 if "content" in out['choices'][0]["delta"]:
                     output_chunk_txt = out['choices'][0]["delta"]['content']
@@ -65,24 +65,24 @@ class Llm:
                         backticks = 0
                     if i == 1:
                         if backticks == 0:
-                            ack = con.recv(1024)
-                            con.sendall(b'llm')
-                            ack = con.recv(1024)
-                            con.sendall(str(len(output_chunk_txt.strip().encode())).encode())
-                            ack = con.recv(1024)
-                            con.sendall(output_chunk_txt.strip().encode())
-                            ack = con.recv(1024)
-                            con.sendall(str(color_code_block).encode())
+                            nw.receive_ack()
+                            nw.send_msg("llm")
+                            nw.receive_ack()
+                            nw.send_msg(str(len(output_chunk_txt.strip().encode())))
+                            nw.receive_ack()
+                            nw.send_msg(output_chunk_txt.strip())
+                            nw.receive_ack()
+                            nw.send_msg(str(color_code_block))
                     else:
                         if backticks == 0:
-                            ack = con.recv(1024)
-                            con.sendall(b'llm')
-                            ack = con.recv(1024)
-                            con.sendall(str(len(output_chunk_txt.encode())).encode())
-                            ack = con.recv(1024)
-                            con.sendall(output_chunk_txt.encode())
-                            ack = con.recv(1024)
-                            con.sendall(str(color_code_block).encode())
+                            nw.receive_ack()
+                            nw.send_msg("llm")
+                            nw.receive_ack()
+                            nw.send_msg(str(len(output_chunk_txt.encode())))
+                            nw.receive_ack()
+                            nw.send_msg(output_chunk_txt)
+                            nw.receive_ack()
+                            nw.send_msg(str(color_code_block))
                     llm_output += output_chunk_txt
                     if not skip_code_block_on_tts:
                         tts_text_buffer.append(output_chunk_txt)
@@ -92,19 +92,19 @@ class Llm:
                             # TODO handle emphasis
                             txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
                             if len(txt_for_tts) > 1:
-                                ack = con.recv(1024)
-                                con.sendall(b'tts')
-                                tts.run_tts(con, txt_for_tts)
+                                nw.receive_ack()
+                                nw.send_msg("tts")
+                                tts.run_tts(nw, txt_for_tts)
                             tts_text_buffer = []
             if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
                 # TODO remove multi dots
                 txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
                 if len(txt_for_tts) > 1:
-                    ack = con.recv(1024)
-                    con.sendall(b'tts')
-                    tts.run_tts(con, txt_for_tts)
-            ack = con.recv(1024)
-            con.sendall(b'streaming_end')
+                    nw.receive_ack()
+                    nw.send_msg("tts")
+                    tts.run_tts(nw, txt_for_tts)
+            nw.receive_ack()
+            nw.send_msg("streaming_end")
             llm_output = llm_output.strip()
         else:
             llm_output = outputs["choices"][0]["message"]["content"].strip()

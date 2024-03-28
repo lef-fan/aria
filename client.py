@@ -25,7 +25,7 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
     print('Connecting...')
     while True:
         try:
-            con = nw.client_connect()
+            nw.client_connect()
             break
         except:
             time.sleep(1)
@@ -50,8 +50,8 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                 mic_muted = True
                 mic.update_ui = False
                 ui.load_visual("system_muted_mic")
-                con.sendall(b'reset_vad')
-                ack = con.recv(1024)
+                nw.send_msg("reset_vad")
+                nw.receive_ack()
                 mic.reset_recording()
                 skip_sleep = True
             elif not (mic_chunk==mic_last_chunk).all() and max(mic_chunk) != 0:
@@ -60,13 +60,13 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                     mic.update_ui = True
                     mic_muted = False
                 mic_last_chunk = deepcopy(mic_chunk)
-                con.sendall(b'vad_time')
-                vad_time = con.recv(1024).decode()
+                nw.send_msg("vad_time")
+                vad_time = nw.receive_msg()
                 mic.vad_time = float(vad_time)
-                con.sendall(b'vad_check')
-                ack = con.recv(1024)
-                con.sendall(mic_chunk.tobytes())
-                vad_status = con.recv(1024).decode()
+                nw.send_msg("vad_check")
+                nw.receive_ack()
+                nw.send_audio(mic_chunk.tobytes())
+                vad_status = nw.receive_msg()
                 if vad_status == 'None':
                     mic.reset_recording()
                     skip_sleep = True
@@ -78,19 +78,19 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                     vad_no_voice_wait_sec = vad_params.get('no_voice_wait_sec', None)
                     mic_recording = mic_recording[:-vad_no_voice_wait_sec*mic.samplerate]
                     # wf.write('test.wav', mic.samplerate, mic_recording)
-                    con.sendall(b'stt_transcribe')
-                    ack = con.recv(1024)
-                    con.sendall(str(len(mic_recording.tobytes())).encode())
-                    ack = con.recv(1024)
-                    con.sendall(mic_recording.tobytes())
-                    stt_data = con.recv(1024).decode()
-                    if len(stt_data) != 1:
+                    nw.send_msg("stt_transcribe")
+                    nw.receive_ack()
+                    nw.send_msg(str(len(mic_recording.tobytes())))
+                    nw.receive_ack()
+                    nw.send_audio(mic_recording.tobytes())
+                    stt_data = nw.receive_msg()
+                    if len(stt_data) == 1:
                         ui.add_message("You", stt_data, new_entry=True)
-                        con.sendall(b'llm_get_answer')
+                        nw.send_msg("llm_get_answer")
                         if not llm_params.get('streaming_output', None):
-                            llm_data_size = con.recv(1024).decode()
-                            con.sendall(b'ACK')
-                            llm_data = con.recv(int(llm_data_size), socket.MSG_WAITALL).decode()
+                            llm_data_size = nw.receive_msg()
+                            nw.send_ack()
+                            llm_data = nw.receive_msg(int(llm_data_size), waitall=True)
                             code_blocks = find_code_blocks(llm_data)
                             if len(code_blocks) > 0:
                                 color_code_block = True
@@ -98,53 +98,55 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                                 color_code_block = False
                             ui.add_message("Aria", llm_data, new_entry=True, color_code_block=color_code_block, code_blocks=code_blocks)
                             while True:
-                                con.sendall(b'ACK')
-                                tts_chunk_size = con.recv(1024).decode()
+                                nw.send_ack()
+                                tts_chunk_size = nw.receive_msg()
                                 if tts_chunk_size == "tts_end":
                                     break
                                 else:
-                                    con.sendall(b'ACK')
-                                    tts_chunk = con.recv(int(tts_chunk_size), socket.MSG_WAITALL)
+                                    nw.send_ack()
+                                    tts_chunk = nw.receive_audio(int(tts_chunk_size))
                                     ap.stream_sound(np.frombuffer(tts_chunk, np.float32).flatten(), update_ui=True)
                             ap.check_audio_finished()
                         else:
-                            ack = con.recv(1024)
+                            nw.receive_ack()
                             ui.add_message("Aria", "", new_entry=True)
                             while True:
-                                con.sendall(b'ACK')
-                                llm_or_tts = con.recv(1024).decode()
+                                nw.send_ack()
+                                llm_or_tts = nw.receive_msg()
                                 if llm_or_tts == "llm":
-                                    con.sendall(b'ACK')
-                                    llm_chunk_size = con.recv(1024).decode()
-                                    con.sendall(b'ACK')
-                                    llm_chunk = con.recv(int(llm_chunk_size), socket.MSG_WAITALL).decode()
-                                    con.sendall(b'ACK')
-                                    color_code_block = con.recv(1024).decode()
+                                    nw.send_ack()
+                                    llm_chunk_size = nw.receive_msg()
+                                    nw.send_ack()
+                                    llm_chunk = nw.receive_msg(int(llm_chunk_size), waitall=True)
+                                    nw.send_ack()
+                                    color_code_block = nw.receive_msg()
                                     ui.add_message("Aria", llm_chunk, new_entry=False, color_code_block=color_code_block.lower()=='true')
                                 elif llm_or_tts == "tts":
                                     while True:
-                                        con.sendall(b'ACK')
-                                        tts_chunk_size = con.recv(1024).decode()
+                                        nw.send_ack()
+                                        tts_chunk_size = nw.receive_msg()
                                         if tts_chunk_size == "tts_end":
                                             break
                                         else:
-                                            con.sendall(b'ACK')
-                                            tts_chunk = con.recv(int(tts_chunk_size), socket.MSG_WAITALL)
+                                            nw.send_ack()
+                                            tts_chunk = nw.receive_audio(int(tts_chunk_size))
                                             ap.stream_sound(np.frombuffer(tts_chunk, np.float32).flatten(), update_ui=True)
                                 elif llm_or_tts == "streaming_end":
                                     break
                             ap.check_audio_finished()
                     else:
-                        con.sendall(b'fixed_answer')
+                        # TODO add to llm context
+                        ui.add_message("You", "...", new_entry=True)
+                        nw.send_msg("fixed_answer")
                         ui.add_message("Aria", "Did you say something?", new_entry=True)
                         while True:
-                            con.sendall(b'ACK')
-                            tts_chunk_size = con.recv(1024).decode()
+                            nw.send_ack()
+                            tts_chunk_size = nw.receive_msg()
                             if tts_chunk_size == "tts_end":
                                 break
                             else:
-                                con.sendall(b'ACK')
-                                tts_chunk = con.recv(int(tts_chunk_size), socket.MSG_WAITALL)
+                                nw.send_ack()
+                                tts_chunk = nw.receive_audio(int(tts_chunk_size))
                                 ap.stream_sound(np.frombuffer(tts_chunk, np.float32).flatten(), update_ui=True)
                         ap.check_audio_finished()
                     time.sleep(1)

@@ -71,6 +71,7 @@ def main(ui, config):
                     mic.update_ui = True
                     mic_muted = False
                 mic_last_chunk = deepcopy(mic_chunk)
+                mic.vad_time = vad.no_voice_wait_sec - vad.no_voice_sec
                 vad_status = vad.check(mic_chunk, mic.buffer_size / mic.samplerate)
                 if vad_status is None:
                     mic.reset_recording()
@@ -103,6 +104,8 @@ def main(ui, config):
                                 tts.run_tts(txt_for_tts)
                                 ap.check_audio_finished()
                     else:
+                        # TODO add to llm context
+                        ui.add_message("You", "...", new_entry=True)
                         print("You: ...")
                         ui.add_message("Aria", "Did you say something?", new_entry=True)
                         print("🤖... Aria:", "Did you say something?")
