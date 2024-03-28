@@ -5,7 +5,6 @@ import threading
 from copy import deepcopy
 from os.path import join
 import numpy as np
-import socket
 from components.nw import Nw
 from components.ap import Ap
 from components.mic import Mic

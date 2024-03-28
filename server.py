@@ -4,7 +4,6 @@ logging.basicConfig(level=logging.INFO)
 import argparse
 import json
 from os.path import join
-import socket
 import numpy as np
 from components.nw import Nw
 from components.vad import Vad
