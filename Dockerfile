@@ -1,8 +1,8 @@
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+FROM nvidia/cuda:12.6.1-cudnn-devel-ubuntu24.04
 
 RUN apt update && apt upgrade -y \
     && apt install -y git \
-    python3-pip python3.10-venv \
+    python3-pip python3.12-venv \
     && git clone https://github.com/lef-fan/aria.git
 
 WORKDIR /aria
@@ -11,7 +11,6 @@ RUN python3 -m venv venv
 ENV VIRTUAL_ENV venv
 ENV PATH venv/bin:$PATH
 
-RUN pip install wheel numpy torch onnxruntime \
-    git+https://github.com/huggingface/transformers \
-    && CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python \
-    TTS accelerate flash-attn deepspeed
+RUN pip install wheel numpy==1.26.4 torch onnxruntime \
+    && CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python \
+    coqui-tts accelerate flash-attn deepspeed
