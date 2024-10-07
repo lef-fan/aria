@@ -14,3 +14,4 @@ accelerate==0.34.2
 coqui-tts==0.24.2
 scipy==1.14.0
 Pillow==10.4.0
+opuslib==3.0.1

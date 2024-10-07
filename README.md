@@ -38,6 +38,7 @@ python server.py
 or docker for server:
 ```
 docker run --net=host --gpus all --name aria-server -it ghcr.io/lef-fan/aria-server:latest
+source venv/bin/activate
 python server.py
 ```
 client machine (edit client target ip in the config):

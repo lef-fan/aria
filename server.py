@@ -67,7 +67,10 @@ if __name__ == "__main__":
     client_address = nw.server_listening()
 
     while True:
-        client_data = nw.receive_msg()
+        try:
+            client_data = nw.receive_msg()
+        except:
+            client_data = False
         # print(client_data)
         if not client_data:
             print("Client disconnected...")

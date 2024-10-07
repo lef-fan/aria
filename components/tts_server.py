@@ -27,7 +27,7 @@ class Tts:
             get_user_data_dir("tts"), self.model_name.replace("/", "--")
         )
         if self.force_reload or not os.path.isdir(self.model_path):
-            self.model_manager = ModelManager(verbose=self.verbose)
+            self.model_manager = ModelManager()
             self.model_path, _, _ = self.model_manager.download_model(self.model_name)
 
         self.config = XttsConfig()
