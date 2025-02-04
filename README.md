@@ -46,6 +46,11 @@ client machine (edit client target ip in the config):
 python client.py
 ```
 
+## Upcoming Features
+* Android client
+* Raspberry Pi client
+* Ollama support
+
 ## Documentation
 Work in progress...
 
