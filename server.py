@@ -118,7 +118,8 @@ if __name__ == "__main__":
             llm_data = llm.get_answer(nw, tts, stt_data)
             if not llm.streaming_output:
                 nw.send_msg(llm_data)
-                tts.text_splitting = True
+                if tts.tts_type == "coqui":
+                    tts.text_splitting = True
                 # TODO handle emphasis
                 txt_for_tts = remove_emojis(
                     remove_multiple_dots(remove_code_blocks(llm_data))

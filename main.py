@@ -126,7 +126,8 @@ def main(ui, config):
                                 color_code_block=color_code_block,
                                 code_blocks=code_blocks,
                             )
-                            tts.text_splitting = True
+                            if tts.tts_type == "coqui":
+                                tts.text_splitting = True
                             # TODO handle emphasis
                             txt_for_tts = remove_emojis(
                                 remove_multiple_dots(remove_code_blocks(llm_data))

@@ -13,4 +13,4 @@ ENV PATH venv/bin:$PATH
 
 RUN pip install wheel numpy==1.26.4 torch onnxruntime \
     && CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python \
-    coqui-tts accelerate flash-attn deepspeed opuslib
+    coqui-tts accelerate flash-attn deepspeed opuslib kokoro

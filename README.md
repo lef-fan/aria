@@ -71,6 +71,7 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 - [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
 - [TTS](https://github.com/coqui-ai/TTS)
 - [TTS fork](https://github.com/idiap/coqui-ai-TTS)
+- [kokoro](https://github.com/hexgrad/kokoro)
 - [opuslib](https://github.com/orion-labs/opuslib)
 - [TheBloke](https://huggingface.co/TheBloke)
 - [Bartowski](https://huggingface.co/bartowski)

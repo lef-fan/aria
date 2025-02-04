@@ -44,11 +44,13 @@
   "Tts": {
     "params": {
       "device": "gpu",
+      "tts_type": "kokoro",
       "use_deepspeed": false,
       "text_splitting": false,
       "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
       "force_reload": false,
       "verbose": false,
+      "kokoro_voice": "af_heart",
       "assets": {
         "voice_to_clone": "assets/sofia_hellen.wav"
       }
