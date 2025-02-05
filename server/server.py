@@ -1,21 +1,30 @@
+import sys
 import logging
-
-# logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.INFO)
 import argparse
 import json
-from os.path import join
 import numpy as np
+from pathlib import Path
+from os.path import join
+
+# Add parent directory to Python path
+sys.path.append(str(Path(__file__).parent.parent))
+
 from components.nw import Nw
 from components.vad import Vad
 from components.stt import Stt
 from components.llm_server import Llm
 from components.tts_server import Tts
-from components.utils import remove_emojis
-from components.utils import remove_multiple_dots
-from components.utils import remove_code_blocks
+from components.utils import (
+    remove_emojis,
+    remove_multiple_dots,
+    remove_code_blocks,
+)
+from cli.models_manager import setup_models_directory
+from utils.progress import track_progress, show_status
+from rich import print as rprint
 
-# import scipy.io.wavfile as wf
+# Set logging level
+logging.basicConfig(level=logging.INFO)
 
 
 def load_config(config_file):
@@ -36,21 +45,52 @@ if __name__ == "__main__":
     config_path = join("configs", args.config)
     config = load_config(config_path)
 
-    nw_params = config.get("Nw", {}).get("params", {})
+    # Setup model directories before initializing components
+    rprint("\n[bold cyan]Setting up model storage...[/bold cyan]")
+    models_dir = setup_models_directory()
+
+    # Update model paths in config
     vad_params = config.get("Vad", {}).get("params", {})
     stt_params = config.get("Stt", {}).get("params", {})
-    llm_params = config.get("Llm", {}).get("params", {})
     tts_params = config.get("Tts", {}).get("params", {})
+
+    # Special handling for VAD model path - keep the original repo if path doesn't exist
+    vad_model_path = models_dir / "vad" / "silero_vad.onnx"
+    if vad_model_path.exists():
+        vad_params["repo_or_dir"] = str(models_dir / "vad")
+    # else keep the original GitHub repo path for first-time download
+
+    # Keep HuggingFace model IDs as they are
+    stt_model_id = stt_params["model_name"]  # Keep original HF model ID
+    if not stt_model_id.startswith(("openai/", "facebook/", "microsoft/", "google/")):
+        stt_params["model_name"] = str(models_dir / "stt" / Path(stt_model_id).name)
+
+    tts_model_id = tts_params["model_name"]  # Keep original model ID
+    if not tts_model_id.startswith("tts_models/"):
+        tts_params["model_name"] = str(models_dir / "tts" / Path(tts_model_id).name)
+
+    # Initialize components with updated paths
+    rprint("\n[bold cyan]Initializing components...[/bold cyan]")
+
+    with show_status("Loading network component..."):
+        nw = Nw(params=config.get("Nw", {}).get("params", {}))
+
+    with show_status("Loading VAD model..."):
+        vad = Vad(params=vad_params)
+
+    with show_status("Loading STT model..."):
+        stt = Stt(params=stt_params)
+
+    with show_status("Loading LLM..."):
+        llm = Llm(params=config.get("Llm", {}).get("params", {}))
+
+    with show_status("Loading TTS model..."):
+        tts = Tts(params=tts_params)
+
     mic_params = config.get("Mic", {}).get("params", {})
     ap_params = config.get("Ap", {}).get("params", {})
 
     print("Loading...")
-
-    nw = Nw(params=nw_params)
-    vad = Vad(params=vad_params)
-    stt = Stt(params=stt_params)
-    llm = Llm(params=llm_params)
-    tts = Tts(params=tts_params)
 
     nw.server_init()
     if nw.audio_compression:

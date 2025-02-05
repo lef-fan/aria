@@ -162,3 +162,7 @@ cython_debug/
 
 # Custom ignore
 configs/copy.json
+
+# Model storage
+models/*
+!models/.gitkeep
