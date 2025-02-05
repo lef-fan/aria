@@ -1,77 +1,92 @@
 {
-    "Mic": {
-      "params": {
-        "samplerate": 16000,
-        "buffer_size": 512,
-        "channels": 1,
-        "device": "default"
-      }
-    },
-    "Vad": {
-      "params": {
-        "samplerate": 16000,
-        "repo_or_dir": "snakers4/silero-vad",
-        "model_name": "silero_vad",
-        "force_reload": false,
-        "use_onnx": true,
-        "no_voice_wait_sec": 2,
-        "onnx_verbose": false,
-        "verbose": false
-      }
-    },
-    "Stt": {
-      "params": {
-        "device": "cuda:0",
-        "model_name": "openai/whisper-large-v3",
-        "low_cpu_mem_usage": true,
-        "attn": "flash_attention_2",
-        "verbose": false
-      }
-    },
-    "Llm": {
-        "params": {
-          "model_name": "TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF",
-          "model_file": "mixtral-8x7b-instruct-v0.1.Q2_K.gguf",
-          "num_gpu_layers": 18,
-          "context_length": 2000,
-          "streaming_output": true,
-          "chat_format": "llama-2",
-          "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
-          "verbose": false
-        }
-      },
-    "Tts": {
-      "params": {
-        "device": "gpu",
-        "samplerate": 24000,
-        "buffer_size": 24000,
-        "channels": 1,
-        "use_deepspeed": false,
-        "text_splitting": false,
-        "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
-        "force_reload": false,
-        "verbose": false,
-        "assets": {
-            "voice_to_clone": "assets/sofia_hellen.wav"
-        }
-      }
-    },
-    "Ap": {
-      "params": {
-        "device": "default",
-        "assets": {
-          "listening_sound": "assets/listening.wav",
-          "speaking_sound": "assets/speaking.wav"
-          }
-      }
-    },
-    "Ui": {
-      "params": {
-        "window_title": "Aria",
-        "window_size": "750",
-        "assets": {
-          "icon": "assets/aria_icon.png"
-        }
+  "Mic": {
+    "params": {
+      "audio_device": "default",
+      "samplerate": 16000,
+      "buffer_size": 640,
+      "channels": 1
+    }
+  },
+  "Vad": {
+    "params": {
+      "samplerate": 16000,
+      "repo_or_dir": "snakers4/silero-vad",
+      "model_name": "silero_vad",
+      "force_reload": false,
+      "use_onnx": true,
+      "no_voice_wait_sec": 1,
+      "onnx_verbose": false,
+      "verbose": false
+    }
+  },
+  "Stt": {
+    "params": {
+      "device": "cuda:0",
+      "model_name": "openai/whisper-large-v3",
+      "low_cpu_mem_usage": true,
+      "attn": "flash_attention_2",
+      "verbose": false
+    }
+  },
+  "Llm": {
+    "params": {
+      "custom_path": "",
+      "model_name": "bartowski/Qwen2.5-32B-AGI-GGUF",
+      "model_file": "Qwen2.5-32B-AGI-Q5_K_M.gguf",
+      "num_gpu_layers": -1,
+      "context_length": 8000,
+      "streaming_output": true,
+      "chat_format": "qwen",
+      "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
+      "verbose": false
+    }
+  },
+  "Tts": {
+    "params": {
+      "device": "gpu",
+      "tts_type": "kokoro",
+      "use_deepspeed": false,
+      "text_splitting": false,
+      "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
+      "force_reload": false,
+      "verbose": false,
+      "kokoro_voice": "af_heart",
+      "assets": {
+        "voice_to_clone": "assets/sofia_hellen.wav"
       }
     }
+  },
+  "Ap": {
+    "params": {
+      "audio_device": "default",
+      "samplerate": 24000,
+      "buffer_size": 960,
+      "channels": 1,
+      "assets": {
+        "listening_sound": "assets/listening.wav",
+        "transition_sound": "assets/transition.wav"
+      }
+    }
+  },
+  "Ui": {
+    "params": {
+      "window_title": "Aria",
+      "window_size": "750",
+      "assets": {
+        "icon": "assets/aria_icon.png",
+        "loading_gif": "assets/loading.gif",
+        "transition_gif": "assets/transition.gif",
+        "muted_mic_gif": "assets/muted_mic.gif"
+      }
+    }
+  },
+  "Nw": {
+    "params": {
+      "audio_compression": true,
+      "host_ip": "0.0.0.0",
+      "port": 12345,
+      "client_target_ip": "0.0.0.0",
+      "client_target_port": 12345
+    }
   }
+}

@@ -3,22 +3,53 @@ Meet Aria. A local and uncensored AI entity.
 
 ![Aria](https://github.com/lef-fan/aria/blob/main/assets/aria.png?raw=true)
 
+https://github.com/lef-fan/aria/assets/23457676/d90b3f04-6d56-43a7-86ab-674fc558abe2
+
 ## Installation
 Clone the repo.\
 Install required libs.
 
 [For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
 
-(Tested on Linux + NVIDIA GPUs)
+Easy installation for server mode using docker:
+```
+docker buildx build --tag ghcr.io/lef-fan/aria-server:latest .
+```
+
+(Tested on Linux + NVIDIA GPUs with python >=3.10)
 
 More are coming, work in progress...
 
 ## Usage
+First run will take a while to download all the required models.\
+You may edit the default config for your device or use case (change model, specify devices, etc...)\
+If you have the resources, strongly recommended to use a model of bigger quant method such as:\
+```Qwen2.5-32B-AGI-Q6_K_L.gguf```
+
 ```
 python main.py
 ```
-You may edit the default config for your device or use case (change model, specify devices, etc...)\
-If you have the resources, strongly recommended to use a model of bigger quant method such as: ```mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf```
+### Server and Client Mode
+
+server machine:
+```
+python server.py 
+```
+or docker for server:
+```
+docker run --net=host --gpus all --name aria-server -it ghcr.io/lef-fan/aria-server:latest
+source venv/bin/activate
+python server.py
+```
+client machine (edit client target ip in the config):
+```
+python client.py
+```
+
+## Upcoming Features
+* Android client
+* Raspberry Pi client
+* Ollama support
 
 ## Documentation
 Work in progress...
@@ -44,7 +75,11 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 - [whisper](https://github.com/openai/whisper)
 - [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
 - [TTS](https://github.com/coqui-ai/TTS)
+- [TTS fork](https://github.com/idiap/coqui-ai-TTS)
+- [kokoro](https://github.com/hexgrad/kokoro)
+- [opuslib](https://github.com/orion-labs/opuslib)
 - [TheBloke](https://huggingface.co/TheBloke)
+- [Bartowski](https://huggingface.co/bartowski)
 
 ## License Information
 
@@ -55,3 +90,7 @@ While this project is licensed under GNU AGPLv3, the usage of some of the compon
 - **License**: Open-source only for non-commercial projects.
 - **Commercial Use**: Requires a paid plan.
 - **Details**: [Coqui Public Model License 1.0.0](https://coqui.ai/cpml)
+
+#### opuslib
+- **License**: BSD-3-Clause license
+- **Details**: [opuslib license](https://github.com/orion-labs/opuslib?tab=BSD-3-Clause-1-ov-file#readme)

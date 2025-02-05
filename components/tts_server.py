@@ -9,7 +9,7 @@ from kokoro import KPipeline
 
 
 class Tts:
-    def __init__(self, params=None, ap=None):
+    def __init__(self, params=None):
         self.params = params or {}
         self.device = self.params.get("device", None)
         self.tts_type = self.params.get("tts_type", None)
@@ -22,8 +22,6 @@ class Tts:
         self.voice_to_clone = self.params.get("assets", None).get(
             "voice_to_clone", None
         )
-
-        self.ap = ap
 
         if self.tts_type == "coqui":
             if not self.verbose:
@@ -54,29 +52,33 @@ class Tts:
         elif self.tts_type == "kokoro":
             self.pipeline = KPipeline(lang_code='a')
 
-    def run_tts(self, data):
-        if self.tts_type == "coqui":
-            tts_stream = self.model.inference_stream(
-                data,
-                "en",
-                self.gpt_cond_latent,
-                self.speaker_embedding,
-                enable_text_splitting=self.text_splitting,
-            )
-        elif self.tts_type == "kokoro":
-            tts_stream = self.pipeline(
-                    data, voice=self.kokoro_voice,
-                    speed=1, split_pattern=r'\n+'
+    def run_tts(self, nw, data):
+        if not all(char.isspace() for char in data):
+            if self.tts_type == "coqui":
+                tts_stream = self.model.inference_stream(
+                    data,
+                    "en",
+                    self.gpt_cond_latent,
+                    self.speaker_embedding,
+                    enable_text_splitting=self.text_splitting,
                 )
-        for chunk in tts_stream:
-            if self.tts_type == "kokoro":
-                chunk = chunk[-1].squeeze()
-            else:
-                chunk = chunk.squeeze()
-            if self.device == "gpu":
-                chunk = chunk.cpu()
-            self.ap.stream_sound(
-                (chunk.numpy() * 32768).astype(np.int16), update_ui=True
-            )
-
+            elif self.tts_type == "kokoro":
+                tts_stream = self.pipeline(
+                        data, voice=self.kokoro_voice,
+                        speed=1, split_pattern=r'\n+'
+                    )
+            for chunk in tts_stream:
+                if self.tts_type == "kokoro":
+                    chunk = chunk[-1].squeeze()
+                else:
+                    chunk = chunk.squeeze()
+                if self.device == "gpu":
+                    chunk = chunk.cpu()
+                nw.receive_ack()
+                # maybe clip first? np.clip(chunk.numpy(), -1.0, 1.0)
+                chunk_numpy_int16 = (chunk.numpy() * 32768).astype(np.int16)
+                nw.send_msg("tts_continue")
+                nw.send_audio_recording(chunk_numpy_int16.tobytes())
+        nw.receive_ack()
+        nw.send_msg("tts_end")
         return "tts_done"

@@ -1,4 +1,3 @@
-import sys
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 from .utils import remove_emojis
@@ -35,7 +34,7 @@ class Llm:
 
         self.messages = [{"role": "system", "content": self.system_message}]
 
-    def get_answer(self, ui, ap, tts, data):
+    def get_answer(self, nw, tts, data):
         self.messages.append({"role": "user", "content": data})
 
         outputs = self.llm.create_chat_completion(
@@ -48,7 +47,7 @@ class Llm:
             color_code_block = False
             backticks = 0
             skip_code_block_on_tts = False
-            ui.add_message("Aria", "", new_entry=True)
+            nw.send_ack()
             for i, out in enumerate(outputs):
                 if "content" in out["choices"][0]["delta"]:
                     output_chunk_txt = out["choices"][0]["delta"]["content"]
@@ -63,26 +62,25 @@ class Llm:
                     else:
                         backticks = 0
                     if i == 1:
-                        print("Aria:", output_chunk_txt.strip(), end="")
                         if backticks == 0:
-                            ui.add_message(
-                                "Aria",
-                                output_chunk_txt.strip(),
-                                new_entry=False,
-                                color_code_block=color_code_block,
-                            )
+                            nw.receive_ack()
+                            nw.send_msg("llm")
+                            nw.receive_ack()
+                            nw.send_msg(output_chunk_txt.strip())
+                            nw.receive_ack()
+                            nw.send_msg(str(color_code_block))
                     else:
-                        print(output_chunk_txt, end="")
                         if backticks == 0:
-                            ui.add_message(
-                                "Aria",
-                                output_chunk_txt,
-                                new_entry=False,
-                                color_code_block=color_code_block,
-                            )
-                    sys.stdout.flush()
+                            nw.receive_ack()
+                            nw.send_msg("llm")
+                            nw.receive_ack()
+                            nw.send_msg(output_chunk_txt)
+                            nw.receive_ack()
+                            nw.send_msg(str(color_code_block))
                     llm_output += output_chunk_txt
-                    if not skip_code_block_on_tts:
+                    if (
+                        not skip_code_block_on_tts
+                    ):  # fix when codeblock, tts not skiping leading text
                         tts_text_buffer.append(output_chunk_txt)
                         if tts_text_buffer[-1] in [".", "!", "?", ":", "..", "..."]:
                             # TODO handle float numbers
@@ -91,20 +89,22 @@ class Llm:
                             txt_for_tts = remove_emojis(
                                 "".join(tts_text_buffer).strip()
                             )
-                            if len(txt_for_tts) > 1 and not all(
-                                char.isspace() for char in txt_for_tts
-                            ):
-                                tts.run_tts(txt_for_tts)
+                            # TODO fix 1 character
+                            if len(txt_for_tts) > 1:
+                                nw.receive_ack()
+                                nw.send_msg("tts")
+                                tts.run_tts(nw, txt_for_tts)
                             tts_text_buffer = []
             if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
                 # TODO remove multi dots
                 txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
-                if len(txt_for_tts) > 1 and not all(
-                    char.isspace() for char in txt_for_tts
-                ):
-                    tts.run_tts(txt_for_tts)
-            ap.check_audio_finished()
-            print()
+                # TODO fix 1 character
+                if len(txt_for_tts) > 1:
+                    nw.receive_ack()
+                    nw.send_msg("tts")
+                    tts.run_tts(nw, txt_for_tts)
+            nw.receive_ack()
+            nw.send_msg("streaming_end")
             llm_output = llm_output.strip()
         else:
             llm_output = outputs["choices"][0]["message"]["content"].strip()
