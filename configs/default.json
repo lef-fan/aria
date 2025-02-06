@@ -22,7 +22,7 @@
   "Stt": {
     "params": {
       "device": "cuda:0",
-      "model_name": "openai/whisper-large-v3",
+      "model_name": "openai/whisper-large-v3-turbo",
       "low_cpu_mem_usage": true,
       "attn": "flash_attention_2",
       "verbose": false
@@ -31,10 +31,10 @@
   "Llm": {
     "params": {
       "custom_path": "",
-      "model_name": "bartowski/Qwen2.5-32B-AGI-GGUF",
-      "model_file": "Qwen2.5-32B-AGI-Q5_K_M.gguf",
+      "model_name": "mradermacher/Qwen2.5-7B-Instruct-abliterated-v3-GGUF",
+      "model_file": "Qwen2.5-7B-Instruct-abliterated-v3.Q4_K_M.gguf",
       "num_gpu_layers": -1,
-      "context_length": 8000,
+      "context_length": 4096,
       "streaming_output": true,
       "chat_format": "qwen",
       "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
