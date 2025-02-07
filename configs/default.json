@@ -31,13 +31,13 @@
   "Llm": {
     "params": {
       "custom_path": "",
-      "model_name": "mradermacher/Qwen2.5-7B-Instruct-abliterated-v3-GGUF",
-      "model_file": "Qwen2.5-7B-Instruct-abliterated-v3.Q4_K_M.gguf",
+      "model_name": "mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF",
+      "model_file": "meta-llama-3.1-8b-instruct-abliterated.Q8_0.gguf",
       "num_gpu_layers": -1,
-      "context_length": 4096,
+      "context_length": 8192,
       "streaming_output": true,
-      "chat_format": "qwen",
-      "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
+      "chat_format": "llama-3",
+      "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. If you are asked to write code, always enclose it in backticks, e.g., ```print('hello')```, but only for the code itself. Please keep responses very brief and do not suggest for further assistance or help.",
       "verbose": false
     }
   },
@@ -50,7 +50,7 @@
       "model_name": "tts_models/multilingual/multi-dataset/xtts_v2",
       "force_reload": false,
       "verbose": false,
-      "kokoro_voice": "af_heart",
+      "kokoro_voice": "af_nicole",
       "assets": {
         "voice_to_clone": "assets/sofia_hellen.wav"
       }

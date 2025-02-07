@@ -26,7 +26,7 @@ More are coming, work in progress...
 ## Usage
 First run will take a while to download all the required models.\
 You may edit the default config for your device or use case (change model, specify devices, etc...)\
-If you have the resources, strongly recommended to use bigger model and/or bigger quant method.\
+If you have the resources, strongly recommended to use bigger model and/or bigger quant method.
 
 ### Non server/client mode:
 
@@ -87,6 +87,7 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 - [TheBloke](https://huggingface.co/TheBloke)
 - [Bartowski](https://huggingface.co/bartowski)
 - [mradermacher](https://huggingface.co/mradermacher)
+- [mlabonne](https://huggingface.co/mlabonne)
 
 ## License Information
 
@@ -101,3 +102,7 @@ While this project is licensed under GNU AGPLv3, the usage of some of the compon
 #### opuslib
 - **License**: BSD-3-Clause license
 - **Details**: [opuslib license](https://github.com/orion-labs/opuslib?tab=BSD-3-Clause-1-ov-file#readme)
+
+#### Llama
+- **License**: llama3.1
+- **Details**: [llama license](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE)
