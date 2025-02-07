@@ -3,7 +3,7 @@ import pyaudio
 
 
 class Mic:
-    def __init__(self, params=None, ui=None, vad_params=None):
+    def __init__(self, params=None, ui=None, vad=None):
         self.params = params or {}
         self.audio_device = self.params.get("audio_device", None)
         self.samplerate = self.params.get("samplerate", None)
@@ -19,7 +19,7 @@ class Mic:
 
         self.ui = ui
         self.update_ui = False
-        self.vad_time = vad_params.get("no_voice_wait_sec", None)
+        self.vad_time = vad.no_voice_wait_sec
 
         p = pyaudio.PyAudio()
         self._stream = p.open(

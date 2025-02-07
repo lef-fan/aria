@@ -7,7 +7,6 @@ import json
 from os.path import join
 import numpy as np
 from components.nw import Nw
-from components.vad import Vad
 from components.stt import Stt
 from components.llm_server import Llm
 from components.tts_server import Tts
@@ -37,7 +36,6 @@ if __name__ == "__main__":
     config = load_config(config_path)
 
     nw_params = config.get("Nw", {}).get("params", {})
-    vad_params = config.get("Vad", {}).get("params", {})
     stt_params = config.get("Stt", {}).get("params", {})
     llm_params = config.get("Llm", {}).get("params", {})
     tts_params = config.get("Tts", {}).get("params", {})
@@ -47,7 +45,6 @@ if __name__ == "__main__":
     print("Loading...")
 
     nw = Nw(params=nw_params)
-    vad = Vad(params=vad_params)
     stt = Stt(params=stt_params)
     llm = Llm(params=llm_params)
     tts = Tts(params=tts_params)
@@ -74,32 +71,8 @@ if __name__ == "__main__":
         # print(client_data)
         if not client_data:
             print("Client disconnected...")
-            # maybe reset vad?
             client_address = nw.server_listening()
-        if client_data == "reset_vad":
-            vad.reset_vad()
-            nw.send_ack()
-        elif client_data == "vad_time":
-            vad_time = vad.no_voice_wait_sec - vad.no_voice_sec
-            nw.send_msg(vad_time)
-        elif client_data == "vad_check":
-            nw.send_ack()
-            mic_chunk = nw.receive_audio_chunk(
-                mic_params.get("buffer_size", None) * 2  # 2 bytes per sample when pcm16
-            )
-            chunk_time = mic_params.get("buffer_size", None) / mic_params.get(
-                "samplerate", None
-            )
-            vad_status = vad.check(
-                np.frombuffer(mic_chunk, np.int16)
-                .flatten()
-                .astype(np.float32, order="C")
-                / 32768.0,
-                chunk_time,
-            )
-            # print(vad_status, vad.no_voice_sec)
-            nw.send_msg(vad_status)
-        elif client_data == "stt_transcribe":
+        if client_data == "stt_transcribe":
             nw.send_ack()
             mic_recording = nw.receive_audio_recording()
             # wf.write(

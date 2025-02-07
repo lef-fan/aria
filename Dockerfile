@@ -11,5 +11,5 @@ RUN python3 -m venv venv
 ENV VIRTUAL_ENV=venv
 ENV PATH=venv/bin:$PATH
 
-RUN bash -c "pip install --no-cache-dir -r <(grep -v 'PyAudio==0.2.14' requirements.txt)"
+RUN bash -c "pip install --no-cache-dir -r <(grep -Ev 'PyAudio==0.2.14|onnxruntime==1.20.1' requirements.txt)"
 RUN pip install --no-cache-dir --no-build-isolation flash-attn==2.7.4.post1

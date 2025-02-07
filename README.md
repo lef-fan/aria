@@ -6,15 +6,17 @@ Meet Aria. A local and uncensored AI entity.
 https://github.com/lef-fan/aria/assets/23457676/d90b3f04-6d56-43a7-86ab-674fc558abe2
 
 ## Installation
-Clone the repo and run:
+Clone the repo.
+### Method 1 - Easy installation for server/client mode using docker:
+```
+docker buildx build --tag ghcr.io/lef-fan/aria-server:latest .
+pip install -r requirements_client.txt
+```
+
+### Method 2 - Non docker server:
 ```
 pip install -r requirements.txt
 pip install --no-build-isolation flash-attn==2.7.4.post1
-```
-
-Easy installation for server mode using docker:
-```
-docker buildx build --tag ghcr.io/lef-fan/aria-server:latest .
 ```
 
 (Tested on Arch Linux + NVIDIA GPUs with python == 3.12)
@@ -24,24 +26,28 @@ More are coming, work in progress...
 ## Usage
 First run will take a while to download all the required models.\
 You may edit the default config for your device or use case (change model, specify devices, etc...)\
-If you have the resources, strongly recommended to use bigger model and/or bigger quant method.
+If you have the resources, strongly recommended to use bigger model and/or bigger quant method.\
+
+### Non server/client mode:
 
 ```
 python main.py
 ```
 ### Server and Client Mode
 
-server machine:
-```
-python server.py 
-```
-or docker for server:
+#### server machine - docker:
 ```
 docker run --net=host --gpus all --name aria-server -it ghcr.io/lef-fan/aria-server:latest
 source venv/bin/activate
 python server.py
 ```
-client machine (edit client target ip in the config):
+
+#### server machine - no docker:
+```
+python server.py 
+```
+
+#### client machine (edit client target ip in the config):
 ```
 python client.py
 ```

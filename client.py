@@ -6,6 +6,7 @@ from copy import deepcopy
 from os.path import join
 import numpy as np
 from components.nw import Nw
+from components.vad import Vad
 from components.ap import Ap
 from components.mic import Mic
 from components.ui import Ui
@@ -20,7 +21,7 @@ def load_config(config_file):
     return json_data
 
 
-def main(nw, ui, mic, ap, vad_params, llm_params):
+def main(nw, ui, mic, vad, ap, llm_params):
     nw.client_init()
     if nw.audio_compression:
         nw.init_audio_encoder(mic.samplerate, mic.channels, mic.buffer_size)
@@ -54,8 +55,7 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                 mic_muted = True
                 mic.update_ui = False
                 ui.load_visual("system_muted_mic")
-                nw.send_msg("reset_vad")
-                nw.receive_ack()
+                vad.reset_vad()
                 mic.reset_recording()
                 skip_sleep = True
             elif not (
@@ -66,13 +66,16 @@ def main(nw, ui, mic, ap, vad_params, llm_params):
                     mic.update_ui = True
                     mic_muted = False
                 mic_last_chunk = deepcopy(mic_chunk)
-                nw.send_msg("vad_time")
-                vad_time = nw.receive_msg()
-                mic.vad_time = float(vad_time)
-                nw.send_msg("vad_check")
-                nw.receive_ack()
-                nw.send_audio_chunk(mic_chunk)
-                vad_status = nw.receive_msg()
+                mic.vad_time = vad.no_voice_wait_sec - vad.no_voice_sec
+                chunk_time = mic.buffer_size / mic.samplerate
+                vad_status = vad.check(
+                    np.frombuffer(mic_chunk, np.int16)
+                    .flatten()
+                    .astype(np.float32, order="C")
+                    / 32768.0,
+                    chunk_time,
+                )
+                # print(vad_status, vad.no_voice_sec)
                 if vad_status == "None":
                     mic.reset_recording()
                     skip_sleep = True
@@ -198,19 +201,20 @@ if __name__ == "__main__":
     config = load_config(config_path)
 
     nw_params = config.get("Nw", {}).get("params", {})
+    vad_params = config.get("Vad", {}).get("params", {})
     ap_params = config.get("Ap", {}).get("params", {})
     mic_params = config.get("Mic", {}).get("params", {})
     ui_params = config.get("Ui", {}).get("params", {})
-    vad_params = config.get("Vad", {}).get("params", {})
     llm_params = config.get("Llm", {}).get("params", {})
 
     nw = Nw(params=nw_params)
+    vad = Vad(params=vad_params)
     ui = Ui(params=ui_params)
     ap = Ap(params=ap_params, ui=ui)
-    mic = Mic(params=mic_params, ui=ui, vad_params=vad_params)
+    mic = Mic(params=mic_params, ui=ui, vad=vad)
 
     com_thread = threading.Thread(
-        target=main, args=(nw, ui, mic, ap, vad_params, llm_params)
+        target=main, args=(nw, ui, mic, vad, ap, llm_params)
     )
     com_thread.start()
 
