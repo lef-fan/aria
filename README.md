@@ -5,6 +5,8 @@ Meet Aria. A local and uncensored AI entity.
 
 https://github.com/lef-fan/aria/assets/23457676/d90b3f04-6d56-43a7-86ab-674fc558abe2
 
+https://github.com/user-attachments/assets/362cdf14-e5f5-4855-aa5f-dc834fbca5ad
+
 ## Installation
 Clone the repo.
 ### Method 1 - Easy installation for server/client mode using docker:
