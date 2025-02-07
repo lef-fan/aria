@@ -8,10 +8,12 @@ https://github.com/lef-fan/aria/assets/23457676/d90b3f04-6d56-43a7-86ab-674fc558
 
 ## Installation
 
-Clone the repo.\
-Install required libs.
+Clone the repo and run:
 
-[For llama llms installation check here](https://github.com/abetlen/llama-cpp-python)
+```
+pip install -r requirements.txt
+pip install --no-build-isolation flash-attn==2.7.4.post1
+```
 
 Easy installation for server mode using docker:
 
@@ -19,7 +21,7 @@ Easy installation for server mode using docker:
 docker buildx build --tag ghcr.io/lef-fan/aria-server:latest .
 ```
 
-(Tested on Linux + NVIDIA GPUs with python >=3.10)
+(Tested on Arch Linux + NVIDIA GPUs with python == 3.12)
 
 More are coming, work in progress...
 
@@ -27,8 +29,7 @@ More are coming, work in progress...
 
 First run will take a while to download all the required models.\
 You may edit the default config for your device or use case (change model, specify devices, etc...)\
-If you have the resources, strongly recommended to use a model of bigger quant method such as:\
-`Qwen2.5-32B-AGI-Q6_K_L.gguf`
+If you have the resources, strongly recommended to use bigger model and/or bigger quant method.
 
 ```
 python main.py
@@ -110,6 +111,7 @@ Should you have any doubts regarding the accuracy or suitability of Aria's respo
 - [opuslib](https://github.com/orion-labs/opuslib)
 - [TheBloke](https://huggingface.co/TheBloke)
 - [Bartowski](https://huggingface.co/bartowski)
+- [mradermacher](https://huggingface.co/mradermacher)
 
 ## License Information
 
