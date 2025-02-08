@@ -46,7 +46,7 @@ def main(ui, config):
     llm = Llm(params=llm_params)
     ap = Ap(params=ap_params, ui=ui)
     tts = Tts(params=tts_params, ap=ap)
-    mic = Mic(params=mic_params, ui=ui, vad_params=vad_params)
+    mic = Mic(params=mic_params, ui=ui, vad=vad)
 
     mic_muted = False
     mic_last_chunk = None
