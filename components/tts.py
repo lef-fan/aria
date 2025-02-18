@@ -19,6 +19,7 @@ class Tts:
         self.force_reload = self.params.get("force_reload", None)
         self.verbose = self.params.get("verbose", None)
         self.kokoro_voice = self.params.get("kokoro_voice", None)
+        self.kokoro_voice_speed = self.params.get("kokoro_voice_speed", None)
         self.voice_to_clone = self.params.get("assets", None).get(
             "voice_to_clone", None
         )
@@ -66,7 +67,7 @@ class Tts:
         elif self.tts_type == "kokoro":
             tts_stream = self.pipeline(
                     data, voice=self.kokoro_voice,
-                    speed=1, split_pattern=r'\n+'
+                    speed=self.kokoro_voice_speed, split_pattern=r'\n+'
                 )
         for chunk in tts_stream:
             if self.tts_type == "kokoro":

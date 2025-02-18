@@ -51,6 +51,7 @@
       "force_reload": false,
       "verbose": false,
       "kokoro_voice": "af_nicole",
+      "kokoro_voice_speed": 1.2,
       "assets": {
         "voice_to_clone": "assets/sofia_hellen.wav"
       }
@@ -85,8 +86,12 @@
       "audio_compression": true,
       "host_ip": "0.0.0.0",
       "port": 12345,
+      "usernames_whitelist": ["you", "another"],
+      "passwords_whitelist": ["@you***whatEver", "@another***whatEver"],
       "client_target_ip": "0.0.0.0",
-      "client_target_port": 12345
+      "client_target_port": 12345,
+      "username": "you",
+      "password": "@you***whatEver"
     }
   }
 }

@@ -1,6 +1,7 @@
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 from .utils import remove_emojis
+from .utils import remove_nonverbal_cues
 
 
 class Llm:
@@ -32,13 +33,18 @@ class Llm:
             verbose=self.verbose,
         )
 
-        self.messages = [{"role": "system", "content": self.system_message}]
+        #self.messages = [{"role": "system", "content": self.system_message}]
+        self.user_aware_messages = {}
 
-    def get_answer(self, nw, tts, data):
-        self.messages.append({"role": "user", "content": data})
+    def get_answer(self, nw, tts, data, user):
+        #self.messages.append({"role": "user", "content": data})
+        if user not in self.user_aware_messages:
+            self.user_aware_messages[user] = [{"role": "system", "content": self.system_message}]
+        self.user_aware_messages[user].append({"role": "user", "content": data})
 
         outputs = self.llm.create_chat_completion(
-            self.messages, stream=self.streaming_output
+            # self.messages, stream=self.streaming_output
+            self.user_aware_messages[user], stream=self.streaming_output
         )
 
         if self.streaming_output:
@@ -63,19 +69,13 @@ class Llm:
                         backticks = 0
                     if i == 1:
                         if backticks == 0:
-                            nw.receive_ack()
                             nw.send_msg("llm")
-                            nw.receive_ack()
                             nw.send_msg(output_chunk_txt.strip())
-                            nw.receive_ack()
                             nw.send_msg(str(color_code_block))
                     else:
                         if backticks == 0:
-                            nw.receive_ack()
                             nw.send_msg("llm")
-                            nw.receive_ack()
                             nw.send_msg(output_chunk_txt)
-                            nw.receive_ack()
                             nw.send_msg(str(color_code_block))
                     llm_output += output_chunk_txt
                     if (
@@ -86,29 +86,29 @@ class Llm:
                             # TODO handle float numbers
                             # TODO remove multi dots
                             # TODO handle emphasis
-                            txt_for_tts = remove_emojis(
-                                "".join(tts_text_buffer).strip()
-                            )
+                            txt_for_tts = remove_nonverbal_cues(
+                                    remove_emojis(
+                                    "".join(tts_text_buffer).strip()
+                                    )
+                                )
                             # TODO fix 1 character
                             if len(txt_for_tts) > 1:
-                                nw.receive_ack()
                                 nw.send_msg("tts")
                                 tts.run_tts(nw, txt_for_tts)
                             tts_text_buffer = []
             if not skip_code_block_on_tts and len(tts_text_buffer) != 0:
                 # TODO remove multi dots
-                txt_for_tts = remove_emojis("".join(tts_text_buffer).strip())
+                txt_for_tts = remove_nonverbal_cues(remove_emojis("".join(tts_text_buffer).strip()))
                 # TODO fix 1 character
                 if len(txt_for_tts) > 1:
-                    nw.receive_ack()
                     nw.send_msg("tts")
                     tts.run_tts(nw, txt_for_tts)
-            nw.receive_ack()
             nw.send_msg("streaming_end")
             llm_output = llm_output.strip()
         else:
             llm_output = outputs["choices"][0]["message"]["content"].strip()
 
-        self.messages.append({"role": "assistant", "content": llm_output})
+        #self.messages.append({"role": "assistant", "content": llm_output})
+        self.user_aware_messages[user].append({"role": "assistant", "content": llm_output})
 
         return llm_output

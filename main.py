@@ -17,6 +17,7 @@ from components.ap import Ap
 from components.mic import Mic
 from components.ui import Ui
 from components.utils import remove_emojis
+from components.utils import remove_nonverbal_cues
 from components.utils import remove_multiple_dots
 from components.utils import remove_code_blocks
 from components.utils import find_code_blocks
@@ -107,6 +108,11 @@ def main(ui, config):
                         .astype(np.float32, order="C")
                         / 32768.0
                     )
+                    if "42 delete messages" in stt_data or "42, delete messages" in stt_data:
+                        llm.messages = [llm.messages[0]]
+                        stt_data = "d"
+                    elif "42 skip this message" in stt_data or "42, skip this message" in stt_data:
+                        stt_data = "s"
                     if len(stt_data) != 1:
                         ui.add_message("You", stt_data, new_entry=True)
                         print("You:", stt_data)
@@ -129,6 +135,7 @@ def main(ui, config):
                             if tts.tts_type == "coqui":
                                 tts.text_splitting = True
                             # TODO handle emphasis
+                            # TODO add remove_nonverbal_cues when not streaming llm
                             txt_for_tts = remove_emojis(
                                 remove_multiple_dots(remove_code_blocks(llm_data))
                             )
@@ -139,10 +146,10 @@ def main(ui, config):
                         # TODO add to llm context
                         ui.add_message("You", "...", new_entry=True)
                         print("You: ...")
-                        ui.add_message("Aria", "Did you say something?", new_entry=True)
-                        print("🤖... Aria:", "Did you say something?")
-                        tts.run_tts("Did you say something?")
-                        ap.check_audio_finished()
+                        # ui.add_message("Aria", "Did you say something?", new_entry=True)
+                        # print("🤖... Aria:", "Did you say something?")
+                        # tts.run_tts("Did you say something?")
+                        # ap.check_audio_finished()
                     time.sleep(1)
                     ap.play_sound(ap.listening_sound)
                     ui.load_visual("You")

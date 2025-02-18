@@ -228,7 +228,8 @@ class Ui:
             pass
     
     def on_closing(self):
-        self.root.destroy()
+        #self.root.destroy()
+        self.root.after(0, self.root.destroy)
         self.kill = True
         
     def start(self):

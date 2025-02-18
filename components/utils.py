@@ -18,6 +18,11 @@ def remove_emojis(text):
     return emoji_pattern.sub(r'', text)
 
 
+def remove_nonverbal_cues(text):
+    text = re.sub(r'\*[^*]+\*', ' ', text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
 def remove_multiple_dots(text):
     result_str = re.sub(r'\.{2,}', '.', text)
     return result_str

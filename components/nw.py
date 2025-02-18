@@ -9,8 +9,12 @@ class Nw:
         self.params = params or {}
         self.host_ip = self.params.get("host_ip", None)
         self.port = self.params.get("port", None)
+        self.usernames_whitelist = self.params.get("usernames_whitelist", None)
+        self.passwords_whitelist = self.params.get("passwords_whitelist", None)
         self.client_target_ip = self.params.get("client_target_ip", None)
         self.client_target_port = self.params.get("client_target_port", None)
+        self.username = self.params.get("username", None)
+        self.password = self.params.get("password", None)
         self.audio_compression = self.params.get("audio_compression", None)
         self.con = None
         self.buffer = bytearray()
@@ -21,13 +25,28 @@ class Nw:
         self.server_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         self.server_socket.bind((self.host_ip, self.port))
         self.server_socket.listen(0)
+        
+    def close_connection(self):
+        self.con.close()
 
     def server_listening(self):
         print("Server listening...")
-        self.con, client_address = self.server_socket.accept()
-        self.send_ack()
+        while True:
+            self.con, client_address = self.server_socket.accept()
+            self.send_ack()
+            try: # TODO remove try, when 1 client in que quits and current quit then error.
+                username = self.receive_msg()
+                password = self.receive_msg()
+                if username in self.usernames_whitelist:
+                    if password == self.passwords_whitelist[self.usernames_whitelist.index(username)]:
+                        self.send_msg("authentication successful")
+                        break
+                self.send_msg("authentication failed")
+            except:
+                pass
+            self.close_connection()
         print("Client connected:", client_address)
-        return client_address
+        return client_address, username
 
     def client_init(self):
         self.con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,6 +55,14 @@ class Nw:
     def client_connect(self):
         self.con.connect((self.client_target_ip, self.client_target_port))
         self.receive_ack()
+        self.send_msg(self.username)
+        self.send_msg(self.password)
+        result = self.receive_msg()
+        if result == "authentication failed":
+            print("Authentication failed!")
+            self.close_connection()
+            return False
+        return True
 
     def init_audio_encoder(self, samplerate, channels, frame_size):
         self.encoder_frame_size = frame_size

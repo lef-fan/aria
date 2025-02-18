@@ -11,6 +11,7 @@ from components.stt import Stt
 from components.llm_server import Llm
 from components.tts_server import Tts
 from components.utils import remove_emojis
+from components.utils import remove_nonverbal_cues
 from components.utils import remove_multiple_dots
 from components.utils import remove_code_blocks
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
             mic_params.get("channels"),
             mic_params.get("buffer_size"),
         )
-    client_address = nw.server_listening()
+    client_address, username = nw.server_listening()
 
     while True:
         try:
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         # print(client_data)
         if not client_data:
             print("Client disconnected...")
-            client_address = nw.server_listening()
+            client_address, username = nw.server_listening()
         if client_data == "stt_transcribe":
             nw.send_ack()
             mic_recording = nw.receive_audio_recording()
@@ -86,14 +87,20 @@ if __name__ == "__main__":
                 .astype(np.float32, order="C")
                 / 32768.0
             )
+            if "42 delete messages" in stt_data or "42, delete messages" in stt_data:
+                llm.user_aware_messages.pop(username, None)
+                stt_data = "d"
+            elif "42 skip this message" in stt_data or "42, skip this message" in stt_data:
+                stt_data = "s"
             nw.send_msg(stt_data)
         elif client_data == "llm_get_answer":
-            llm_data = llm.get_answer(nw, tts, stt_data)
+            llm_data = llm.get_answer(nw, tts, stt_data, username)
             if not llm.streaming_output:
                 nw.send_msg(llm_data)
                 if tts.tts_type == "coqui":
                     tts.text_splitting = True
                 # TODO handle emphasis
+                # TODO add remove_nonverbal_cues when not streaming llm
                 txt_for_tts = remove_emojis(
                     remove_multiple_dots(remove_code_blocks(llm_data))
                 )
