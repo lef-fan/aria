@@ -11,10 +11,7 @@ class Nw:
         self.port = self.params.get("port", None)
         self.usernames_whitelist = self.params.get("usernames_whitelist", None)
         self.passwords_whitelist = self.params.get("passwords_whitelist", None)
-        self.client_target_ip = self.params.get("client_target_ip", None)
-        self.client_target_port = self.params.get("client_target_port", None)
-        self.username = self.params.get("username", None)
-        self.password = self.params.get("password", None)
+        self.client_connect_timeout = self.params.get("client_connect_timeout", None)
         self.audio_compression = self.params.get("audio_compression", None)
         self.con = None
         self.buffer = bytearray()
@@ -52,17 +49,30 @@ class Nw:
         self.con = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.con.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-    def client_connect(self):
-        self.con.connect((self.client_target_ip, self.client_target_port))
-        self.receive_ack()
-        self.send_msg(self.username)
-        self.send_msg(self.password)
-        result = self.receive_msg()
-        if result == "authentication failed":
-            print("Authentication failed!")
+    def client_connect(self, client_target_ip, client_target_port, username, password):
+        self.client_init()
+        self.con.settimeout(self.client_connect_timeout)
+        try:
+            self.con.connect((client_target_ip, client_target_port))
+            self.con.settimeout(None)
+            self.receive_ack()
+            self.send_msg(username)
+            self.send_msg(password)
+            result = self.receive_msg()
+            if result == "authentication failed":
+                self.close_connection()
+                print("Authentication failed!")
+                return "authentication_failed"
+            else:
+                return "success"
+        except socket.timeout:
             self.close_connection()
-            return False
-        return True
+            print("Connection timed out!")
+            return "timed_out"
+        except socket.error as e:
+            self.close_connection()
+            print(f"Socket error: {e}!")
+            return "socket_error"
 
     def init_audio_encoder(self, samplerate, channels, frame_size):
         self.encoder_frame_size = frame_size

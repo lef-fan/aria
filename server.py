@@ -14,6 +14,8 @@ from components.utils import remove_emojis
 from components.utils import remove_nonverbal_cues
 from components.utils import remove_multiple_dots
 from components.utils import remove_code_blocks
+from components.utils import check_delete_messages
+from components.utils import check_skip_message
 
 # import scipy.io.wavfile as wf
 
@@ -87,10 +89,10 @@ if __name__ == "__main__":
                 .astype(np.float32, order="C")
                 / 32768.0
             )
-            if "42 delete messages" in stt_data or "42, delete messages" in stt_data:
+            if check_delete_messages(stt_data):
                 llm.user_aware_messages.pop(username, None)
                 stt_data = "d"
-            elif "42 skip this message" in stt_data or "42, skip this message" in stt_data:
+            elif check_skip_message(stt_data):
                 stt_data = "s"
             nw.send_msg(stt_data)
         elif client_data == "llm_get_answer":

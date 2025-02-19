@@ -39,3 +39,13 @@ def find_code_blocks(text):
     for match in re.finditer(pattern, text, flags=re.DOTALL):
         code_blocks.append([match.start(), match.end() - 1])
     return code_blocks
+
+
+def check_delete_messages(text):
+    pattern = r"42\W*delete\W*messages"
+    return re.search(pattern, text, re.IGNORECASE)
+
+
+def check_skip_message(text):
+    pattern = r"42\W*skip\W*this\W*message"
+    return re.search(pattern, text, re.IGNORECASE)

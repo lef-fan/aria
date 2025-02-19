@@ -85,7 +85,7 @@ class Ui:
         self.text_widget.tag_configure("code", foreground=code_color)
         
         self.root.bind("<Configure>", self.on_resize)
-        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.kill = False
         
         self.visual_stop = False
@@ -227,7 +227,7 @@ class Ui:
         except:
             pass
     
-    def on_closing(self):
+    def close(self):
         #self.root.destroy()
         self.root.after(0, self.root.destroy)
         self.kill = True

@@ -69,6 +69,14 @@
       }
     }
   },
+  "LoginUi": {
+    "params": {
+      "window_title": "Aria",
+      "assets": {
+        "icon": "assets/aria_icon.png"
+      }
+    }
+  },
   "Ui": {
     "params": {
       "window_title": "Aria",
@@ -86,8 +94,15 @@
       "audio_compression": true,
       "host_ip": "0.0.0.0",
       "port": 12345,
-      "usernames_whitelist": ["you", "another"],
-      "passwords_whitelist": ["@you***whatEver", "@another***whatEver"],
+      "usernames_whitelist": [
+        "you",
+        "another"
+      ],
+      "passwords_whitelist": [
+        "@you***whatEver",
+        "@another***whatEver"
+      ],
+      "client_connect_timeout": 5,
       "client_target_ip": "0.0.0.0",
       "client_target_port": 12345,
       "username": "you",
