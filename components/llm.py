@@ -1,7 +1,9 @@
 import sys
+import os
 from llama_cpp import Llama
 from huggingface_hub import hf_hub_download
 from .utils import remove_emojis
+from .lungchanAgents.lungchainAgent import LangChainAgent
 
 
 class Llm:
@@ -17,6 +19,9 @@ class Llm:
         self.system_message = self.params.get("system_message", None)
         self.verbose = self.params.get("verbose", None)
 
+        # Initialize LangChain agent
+        self.agent = LangChainAgent(self, self.system_message)
+        
         if self.custom_path != "":
             model_path = self.custom_path
         elif isinstance(self.model_file, list):
@@ -25,21 +30,86 @@ class Llm:
         else:
             model_path = hf_hub_download(self.model_name, filename=self.model_file)
 
-        self.llm = Llama(
-            model_path=model_path,
-            n_gpu_layers=self.num_gpu_layers,
-            n_ctx=self.context_length,
-            chat_format=self.chat_format,
-            verbose=self.verbose,
-        )
+        print(f"Loading model from: {model_path}")
+        print(f"Model file exists: {os.path.exists(model_path) if model_path else False}")
+        print(f"Context length set to: {self.context_length}")  # Debug context length
+        print(f"GPU layers set to: {self.num_gpu_layers}")  # Debug GPU layers
+        
+        try:
+            self.llm = Llama(
+                model_path=model_path,
+                n_gpu_layers=self.num_gpu_layers,
+                n_ctx=self.context_length,
+                chat_format=self.chat_format,
+                verbose=True,  # Enable verbose for debugging
+            )
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            print(f"Trying with reduced GPU layers...")
+            try:
+                self.llm = Llama(
+                    model_path=model_path,
+                    n_gpu_layers=0,  # Try CPU-only
+                    n_ctx=self.context_length,
+                    chat_format=self.chat_format,
+                    verbose=True,
+                )
+            except Exception as e2:
+                print(f"Failed with CPU-only: {e2}")
+                raise e2
 
         self.messages = [{"role": "system", "content": self.system_message}]
 
+    def should_use_tools(self, user_input: str) -> bool:
+        """Determine if the query requires tool usage"""
+        return self.agent.should_use_tools(user_input)
+
+    def execute_tool(self, user_input: str) -> str:
+        """Execute appropriate tool based on user input"""
+        return self.agent.process_with_tools(user_input)
+
+    def get_tool_usage_stats(self):
+        """Get statistics about tool usage"""
+        return self.agent.get_tool_stats()
+
     def get_answer(self, ui, ap, tts, data):
+        # Use the LangChain agent to get response (it handles tool usage internally)
+        try:
+            response = self.agent.get_response(data, ui, ap, tts)
+            return response
+        except Exception as e:
+            print(f"Agent error: {e}")
+            # Fallback to basic LLM response
+            return self._basic_llm_response(ui, ap, tts, data)
+    
+    def _basic_llm_response(self, ui, ap, tts, data):
+        """Fallback method for basic LLM response without agent"""
         self.messages.append({"role": "user", "content": data})
 
+        # Define stop tokens to prevent unwanted continuation
+        stop_tokens = [
+            "<|im_end|>",
+            "<|im_start|>",
+            "<|end_of_text|>", 
+            "<|eot_id|>",
+            "User:",
+            "Human:",
+            "Assistant:",
+            "\nUser:",
+            "\nHuman:",
+            "\nWhat",
+            "What is the capital",
+            "I found this information",
+            "Next question",
+            "Please provide"
+        ]
+
         outputs = self.llm.create_chat_completion(
-            self.messages, stream=self.streaming_output
+            self.messages, 
+            stream=self.streaming_output,
+            stop=stop_tokens,
+            max_tokens=50,  # Reduce max tokens for shorter responses
+            temperature=0.7  # Reduce randomness for more predictable output
         )
 
         if self.streaming_output:

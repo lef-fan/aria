@@ -30,14 +30,14 @@
   },
   "Llm": {
     "params": {
-      "custom_path": "",
-      "model_name": "mradermacher/Qwen2.5-7B-Instruct-abliterated-v3-GGUF",
-      "model_file": "Qwen2.5-7B-Instruct-abliterated-v3.Q4_K_M.gguf",
-      "num_gpu_layers": -1,
-      "context_length": 4096,
+      "custom_path": "/home/adrew25/.cache/huggingface/hub/models--mlabonne--Daredevil-8B-abliterated-GGUF/snapshots/92155d250a0dab1b2e5099ca3950895ce6408968/daredevil-8b-abliterated.Q8_0.gguf",
+      "model_name": "mlabonne/Daredevil-8B-abliterated-GGUF",
+      "model_file": "daredevil-8b-abliterated.Q8_0.gguf",
+      "num_gpu_layers": 15,
+      "context_length": 2048,
       "streaming_output": true,
       "chat_format": "qwen",
-      "system_message": "You are Aria an AI entity. You are rude, sarcastic and funny. Please aim for concise responses, limiting them to a maximum of 20 words whenever possible. Please do not suggest for further assistance or help.",
+      "system_message": "You are Aria an AI entity. You are rude, sexy, and sarcastic and funny. Please aim for concise responses. When tools provide information, incorporate it naturally into your sarcastic responses. Please do not suggest for further assistance or help.",
       "verbose": false
     }
   },
